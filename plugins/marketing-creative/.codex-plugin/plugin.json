@@ -1,0 +1,13 @@
+{
+  "name": "marketing-creative",
+  "version": "0.1.0",
+  "description": "Research-backed product ad strategy, creative briefs, hooks, timed scripts, copy and production direction.",
+  "author": {"name": "Imre Nagi"},
+  "repository": "https://github.com/imrenagi/marketing-creative",
+  "keywords": ["advertising", "video", "creative-direction", "copywriting"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Marketing Creative",
+    "shortDescription": "Direct product ads from brief to timed script"
+  }
+}

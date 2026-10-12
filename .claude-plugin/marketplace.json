@@ -1,0 +1,12 @@
+{
+  "name": "marketing-creative",
+  "owner": {"name": "Imre Nagi"},
+  "metadata": {"description": "Product advertising and creative direction skills"},
+  "plugins": [
+    {
+      "name": "marketing-creative",
+      "source": "./plugins/marketing-creative",
+      "description": "Product ad briefs, hooks, timed scripts, copy and production plans"
+    }
+  ]
+}
