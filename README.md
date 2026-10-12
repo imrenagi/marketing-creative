@@ -56,6 +56,6 @@ claude plugin validate ./.claude-plugin/marketplace.json
 python3 scripts/build_plugin.py --output /tmp/marketing-creative-plugin.zip
 ```
 
-The build creates one dual-client plugin ZIP from an explicit allowlist of manifests and skill resources. It does not archive the repository or include samples, local documents, the PDF, or other untracked files. Review `docs/skill-evaluation.md` for behavioral evaluation scenarios. Local sample analyses and trial scripts remain uncommitted under `local-docs/` and are not ignored by this change.
+The build creates one dual-client plugin ZIP from an explicit allowlist of manifests and skill resources. It does not archive the repository or include samples, local documents, the PDF, or other untracked files. Review `docs/skill-evaluation.md` for behavioral evaluation scenarios. Sample media under `samples/` and local sample analyses and trial scripts under `local-docs/` are ignored and remain local.
 
 Packaging follows [official OpenAI plugin documentation](https://developers.openai.com/plugins/build/plugins), [Claude's plugin reference](https://code.claude.com/docs/en/plugins-reference), and [Claude marketplace documentation](https://code.claude.com/docs/en/plugin-marketplaces). Structural checks do not establish successful installation or model behavior in every client version.
