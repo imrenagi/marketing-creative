@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ad Video Director"
+  short_description: "Plan hooks, timed scripts, and persuasive product ads"
+  default_prompt: "Use $ad-video-director to turn my product and campaign goal into a creative brief, hook options, and a timed ad script."
