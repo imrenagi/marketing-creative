@@ -17,6 +17,12 @@ import uuid
 
 API = "https://generativelanguage.googleapis.com"
 MAX_BYTES = 256*1024*1024
+VIDEO_MIMES={"video/mp4","video/mpeg","video/mpg","video/mov","video/avi","video/x-flv","video/webm","video/wmv","video/3gpp"}
+
+
+def mime_for(path):
+    return {".mov":"video/mov",".avi":"video/avi",".wmv":"video/wmv",".m4v":"video/mp4"}.get(
+        Path(path).suffix.lower(),mimetypes.guess_type(str(path))[0])
 
 
 def require(condition, message):
@@ -78,12 +84,13 @@ def media(base, value, kind, references):
     if "uri" in value:
         name=file_name(value["uri"])
         mime=mime or ("video/mp4" if kind=="video" else "image/png")
+        require(mime in ({"image/png","image/jpeg","image/webp"} if kind=="image" else VIDEO_MIMES),"Unsupported media MIME type")
         references.append({"kind":kind,"uri":API+"/v1beta/"+name,"mimeType":mime})
         return {"uri":API+"/v1beta/"+name,"mimeType":mime}
     path=(Path(base)/value["path"]).expanduser().resolve()
     require(path.is_file() and path.stat().st_size<=18*1024*1024,"Inline media must be under 18 MiB; upload larger video using file-upload")
-    mime=mime or mimetypes.guess_type(str(path))[0]
-    require(mime in ({"image/png","image/jpeg","image/webp"} if kind=="image" else {"video/mp4"}),"Unsupported media MIME type")
+    mime=mime or mime_for(path)
+    require(mime in ({"image/png","image/jpeg","image/webp"} if kind=="image" else VIDEO_MIMES),"Unsupported media MIME type")
     data=path.read_bytes()
     if kind=="image":
         try:
@@ -122,11 +129,57 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def read_stream(response,on_progress=None):
+    """Assemble documented step-based SSE without keeping thoughts/input dumps."""
+    interaction,steps={},{}
+    total=0
+    block=[]
+    def consume(lines):
+        payload="\n".join(line[5:].lstrip() for line in lines if line.startswith("data:"))
+        if not payload or payload=="[DONE]":
+            return
+        event=json.loads(payload)
+        kind=event.get("event_type",event.get("type"))
+        if isinstance(event.get("interaction"),dict):
+            interaction.update(event["interaction"])
+        if kind=="interaction.status_update":
+            interaction.update({"id":event["interaction_id"],"status":event["status"]})
+        if kind=="step.start":
+            step=event.get("step",{})
+            if step.get("type")=="model_output":
+                steps[event["index"]]={"type":"model_output","content":[]}
+        if kind=="step.delta" and event.get("index") in steps:
+            delta=event.get("delta",{})
+            if delta.get("type")=="video":
+                content=steps[event["index"]]["content"]
+                if content and "data" in delta and "data" in content[-1] and not delta.get("uri"):
+                    content[-1]["data"]+=delta["data"]
+                else:
+                    content.append(delta)
+        if kind in {"interaction.created","interaction.completed","step.stop"} and on_progress:
+            partial={**interaction,"steps":[steps[index] for index in sorted(steps)]}
+            if partial.get("id"):
+                on_progress(partial)
+    for raw in response:
+        total+=len(raw)
+        require(total<=MAX_BYTES,"SSE response exceeds local 256 MiB guard")
+        line=raw.decode().rstrip("\r\n")
+        if not line:
+            consume(block)
+            block=[]
+        else:
+            block.append(line)
+    if block:
+        consume(block)
+    return {**interaction,"steps":[steps[index] for index in sorted(steps)]}
+
+
 class Client:
     def __init__(self):
         self.key=os.environ.get("GEMINI_API_KEY")
         require(self.key,"Export GEMINI_API_KEY; .env is not loaded automatically")
         self.opener=urllib.request.build_opener(NoRedirect())
+        self.on_progress=None
 
     def send(self,method,endpoint,body=None,headers=None,raw=False):
         url=endpoint if endpoint.startswith("https://") else API+endpoint
@@ -136,8 +189,12 @@ class Client:
         payload=body if isinstance(body,bytes) else encoded(body) if body is not None else None
         req=urllib.request.Request(url,data=payload,method=method,
             headers={"x-goog-api-key":self.key,"Content-Type":"application/json",**(headers or {})})
+        if isinstance(body,dict) and body.get("stream"):
+            req.add_header("Accept","text/event-stream")
         try:
             with self.opener.open(req,timeout=180) as response:
+                if not raw and "text/event-stream" in response.headers.get("Content-Type",""):
+                    return read_stream(response,self.on_progress),dict(response.headers)
                 data=response.read(MAX_BYTES+1)
                 require(len(data)<=MAX_BYTES,"API response exceeds local 256 MiB guard")
                 return (data if raw else json.loads(data or b"{}")),dict(response.headers)
@@ -225,6 +282,11 @@ def persist(root,state,result,adapter):
     stored=[]
     for index,output in enumerate(outputs):
         item={k:v for k,v in output.items() if k!="data"}
+        previous=state.get("outputs",[])[index] if index<len(state.get("outputs",[])) else {}
+        if "uri" not in item and previous.get("uri"):
+            item["uri"]=previous["uri"]
+        if item.get("uri") and item["uri"]==previous.get("uri"):
+            item.update({key:previous[key] for key in ("receivedPath","sha256") if key in previous})
         if "data" in output:
             data=base64.b64decode(output["data"],validate=True)
             require(len(data)<=MAX_BYTES and data[4:8]==b"ftyp","Expected MP4 video bytes")
@@ -256,6 +318,8 @@ def submit(body,metadata,output,adapter,approval=None,note=None,client=None):
         check_files(client,metadata["references"])
         state["status"]="submitting"
         save(root/"state.json",state)
+        if body.get("stream"):
+            client.on_progress=lambda partial: persist(root,state,partial,adapter)
         result,_=client.send("POST",adapter.endpoint(metadata),body)
         return persist(root,state,result,adapter)
     except BaseException:
@@ -277,29 +341,44 @@ def status(directory,adapter,client=None):
 
 
 def download(directory,adapter,client=None):
-    client=client or Client()
     root,state=read_run(directory,adapter.PROVIDER)
     if not state.get("outputs"):
+        client=client or Client()
         root,state=status(directory,adapter,client)
     require(state.get("status") in {"completed","downloaded","completed-with-warnings"},"Video is not completed; use status later")
     require(state.get("outputs"),"Completed request returned no video; do not automatically regenerate")
     assets=[]
+    previous=read(root/"assets.json").get("assets",[]) if (root/"assets.json").exists() else []
     for index,item in enumerate(state["outputs"]):
         filename=f"{state['id']}-{index+1}.mp4"
         path=root/filename
         require(not path.is_symlink(),"Refusing symlink video")
-        if item.get("receivedPath"):
+        known=next((a for a in previous if a.get("path")==filename
+                    and a.get("generation",{}).get("requestSha256")==state["requestSha256"]),None)
+        if path.exists() and known:
+            data=path.read_bytes()
+            require(sha(data)==known["sha256"],"Existing output changed; refusing local recovery")
+        elif item.get("receivedPath"):
             source=root/item["receivedPath"]
             require(source.parent==root and not source.is_symlink(),"Unsafe received-video path")
             data=source.read_bytes()
             require(sha(data)==item["sha256"],"Received video changed")
         else:
+            client=client or Client()
             name=file_name(item["uri"])
             info,_=client.send("GET","/v1beta/"+name)
             require(info.get("state")=="ACTIVE","Output video file is not ACTIVE; retry download later")
             data=client.download(item["uri"])
         require(data[4:8]==b"ftyp","Download is not an MP4; preserved run can be retried")
         digest=sha(data)
+        if not item.get("receivedPath"):
+            received=root/f"received-{index+1}.mp4"
+            if received.exists():
+                require(not received.is_symlink() and sha(received.read_bytes())==digest,"Existing received output differs")
+            else:
+                atomic(received,data)
+            item.update({"receivedPath":received.name,"sha256":digest})
+            save(root/"state.json",state)
         if path.exists():
             require(sha(path.read_bytes())==digest,"Existing output differs; preserve it before retrying download")
         else:
@@ -335,25 +414,33 @@ def download(directory,adapter,client=None):
 def upload(path,output,client=None,dry_run=False):
     path=Path(path).expanduser().resolve()
     require(path.is_file() and path.stat().st_size<100*1024*1024,"Local upload guard is 100 MiB")
-    mime=mimetypes.guess_type(str(path))[0]
-    require(mime in {"video/mp4","image/png","image/jpeg","image/webp"},"Unsupported upload MIME type")
+    mime=mime_for(path)
+    require(mime in VIDEO_MIMES|{"image/png","image/jpeg","image/webp"},"Unsupported upload MIME type")
     data=path.read_bytes()
     info={"schemaVersion":1,"provider":"gemini-file","sha256":sha(data),"bytes":len(data),"mimeType":mime}
+    if mime in VIDEO_MIMES:
+        info["mediaMetadata"]=probe(path)
     if dry_run:
         return {**info,"billableSubmission":False}
     client=client or Client()
-    root=new_run(output,{**info,"status":"uploading"})
-    _,headers=client.send("POST","/upload/v1beta/files",{"file":{"displayName":"marketing-video-"+uuid.uuid4().hex}},
-        {"X-Goog-Upload-Protocol":"resumable","X-Goog-Upload-Command":"start",
-         "X-Goog-Upload-Header-Content-Length":str(len(data)),"X-Goog-Upload-Header-Content-Type":mime})
-    url=next((v for k,v in headers.items() if k.lower()=="x-goog-upload-url"),None)
-    require(url,"No upload session URL; do not automatically upload again")
-    result,_=client.send("POST",url,data,{"Content-Type":mime,"X-Goog-Upload-Offset":"0","X-Goog-Upload-Command":"upload, finalize"})
-    file=result["file"]
-    name=file_name(file.get("uri") or file["name"])
-    info.update({"name":name,"uri":API+"/v1beta/"+name,"status":file.get("state","PROCESSING")})
-    save(root/"state.json",info)
-    return info
+    info.update({"status":"uploading","displayName":"marketing-video-"+uuid.uuid4().hex})
+    root=new_run(output,info)
+    try:
+        _,headers=client.send("POST","/upload/v1beta/files",{"file":{"displayName":info["displayName"]}},
+            {"X-Goog-Upload-Protocol":"resumable","X-Goog-Upload-Command":"start",
+             "X-Goog-Upload-Header-Content-Length":str(len(data)),"X-Goog-Upload-Header-Content-Type":mime})
+        url=next((v for k,v in headers.items() if k.lower()=="x-goog-upload-url"),None)
+        require(url,"No upload session URL; do not automatically upload again")
+        result,_=client.send("POST",url,data,{"Content-Type":mime,"X-Goog-Upload-Offset":"0","X-Goog-Upload-Command":"upload, finalize"})
+        file=result["file"]
+        name=file_name(file.get("uri") or file["name"])
+        info.update({"name":name,"uri":API+"/v1beta/"+name,"status":file.get("state","PROCESSING")})
+        save(root/"state.json",info)
+        return info
+    except BaseException:
+        info["status"]="failed-or-unknown"
+        save(root/"state.json",info)
+        raise
 
 
 def cli(adapter):
@@ -367,6 +454,8 @@ def cli(adapter):
     p.add_argument("--approval-note")
     for command in ("status","download"):
         sub.add_parser(command).add_argument("run")
+    if hasattr(adapter,"cancel"):
+        sub.add_parser("cancel").add_argument("run")
     p=sub.add_parser("file-upload")
     p.add_argument("file")
     p.add_argument("--out",required=True)
@@ -385,6 +474,8 @@ def cli(adapter):
         result=download(args.run,adapter)
     elif args.command=="file-upload":
         result=upload(args.file,args.out,dry_run=args.dry_run)
+    elif args.command=="cancel":
+        result=adapter.cancel(args.run)
     else:
         root,state=read_run(args.run,"gemini-file")
         file,_=Client().send("GET","/v1beta/"+file_name(state["uri"]))

@@ -85,7 +85,7 @@ def validate():
     expected_skills = {"marketing-brief", "creative-ideation", "ad-video-director",
                        "motion-video-producer", "motion-art-director", "motion-storyboard",
                        "motion-voice", "motion-composer", "motion-video-qa",
-                       "marketing-image-board", "marketing-image-producer", "marketing-veo-video"}
+                       "marketing-image-board", "marketing-image-producer", "marketing-veo-video", "marketing-omni-video"}
     require({s.parent.name for s in skills} == expected_skills, "Missing/unexpected suite skills")
     for skill in skills:
         text = skill.read_text(encoding="utf-8")
@@ -97,6 +97,9 @@ def validate():
         require(not re.search(r"\bTODO\b|\[TBD\]", text), f"Unfinished scaffold: {skill}")
         ui = (skill.parent / "agents/openai.yaml").read_text(encoding="utf-8")
         require(f"${name[1]}" in ui, f"UI prompt does not invoke skill: {skill}")
+        if name[1] in {"marketing-veo-video","marketing-omni-video"}:
+            require(re.search(r"^\s+allow_implicit_invocation: false$",ui,re.M),
+                    f"Paid video generation must remain opt-in: {skill}")
 
     files = package_files()
     for path in files:

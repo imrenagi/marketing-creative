@@ -30,3 +30,9 @@ No live Gemini generation, upload or batch submission was performed. Mocked resp
 Validated on 2026-10-15: 66 offline tests passed, including thirteen new generated-video regressions. Coverage includes the request-bound approval gate, changed reference fingerprints, Veo generation modes and local constraints, extension provenance/runtime, one-shot status, unknown submissions, secret-safe download redirects, filtered outputs and recovery after FFprobe failure. A synthetic local H.264 fixture was decoded and measured; no provider generation was performed.
 
 Skill structural validation, both Claude manifest validations, the repository allowlist and a 67-file ZIP build passed. Provider access, real REST responses, model quality and regional availability remain unverified by the offline checks.
+
+## Opt-in Omni increment 0.5.0
+
+Validated on 2026-10-15: 79 offline regressions passed. New coverage exercises Omni source/reference bindings, first/last frames and loops, prior stored turns, uploaded edit/extension limits, upscale duration, unsupported controls, background cancellation, step-based SSE, interrupted stream identity, creation-URI preservation, unknown upload state and local recovery after provider file expiry. Package validation enforces explicit-only invocation for both paid-video skills; a 73-file archive and both Claude manifest checks passed.
+
+Independent offline forward-testing covered both skills and reproduced the temporary-URI recovery issue, which now has a regression test. No live generation, uploads, cancellation or remote status/download calls were performed. Real provider compatibility and visual/audio output quality remain production-time checks.

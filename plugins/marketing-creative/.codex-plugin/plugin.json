@@ -1,7 +1,7 @@
 {
   "name": "marketing-creative",
-  "version": "0.4.0",
-  "description": "Marketing briefs, image boards, Gemini batch assets and opt-in Veo clips, plus multi-ratio video production and QA.",
+  "version": "0.5.0",
+  "description": "Marketing strategy, Gemini image assets and opt-in Veo/Omni clips, orchestrated into multi-ratio video production with QA.",
   "author": {
     "name": "Imre Nagi"
   },
@@ -17,7 +17,8 @@
     "image-generation",
     "gemini",
     "nano-banana",
-    "veo"
+    "veo",
+    "omni-flash"
   ],
   "skills": "./skills/",
   "interface": {

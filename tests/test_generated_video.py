@@ -26,6 +26,7 @@ def module(name,path):
 
 C=module("video_provider",SKILLS/"motion-video-producer/scripts/video_provider.py")
 VEO=module("veo_video",SKILLS/"marketing-veo-video/scripts/veo_video.py")
+OMNI=module("omni_video",SKILLS/"marketing-omni-video/scripts/omni_video.py")
 try:
     from PIL import Image
 except ImportError:
@@ -215,6 +216,22 @@ class GeneratedVideoTests(unittest.TestCase):
             C.submit(body,meta,self.root/"run",VEO,meta["requestSha256"],"User approved",client)
         self.assertEqual([call[0] for call in client.calls],["GET"])
 
+    def test_uri_download_recovers_after_probe_status_refresh_and_expiry(self):
+        self.submit(FakeClient([self.completed()]))
+        raw=b"\x00\x00\x00\x18ftypisom"+b"synthetic"
+        details={"width":1280,"height":720,"duration":8,"fps":24,"codec":"h264","hasAudio":True}
+        with patch.object(C,"probe",side_effect=ValueError("missing ffprobe")):
+            with self.assertRaisesRegex(ValueError,"ffprobe"):
+                C.download(self.root/"run",VEO,FakeClient([{"state":"ACTIVE"}],raw))
+        C.status(self.root/"run",VEO,FakeClient([self.completed()]))
+        self.assertEqual(C.read(self.root/"run/state.json")["outputs"][0]["receivedPath"],"received-1.mp4")
+        with patch.object(C,"probe",return_value=details):
+            first=C.download(self.root/"run",VEO,FakeClient())
+            with patch.dict(os.environ,{},clear=True):
+                second=C.download(self.root/"run",VEO)
+        self.assertEqual(first[0]["sha256"],second[0]["sha256"])
+        self.assertTrue((self.root/"run/received-1.mp4").is_file())
+
     def test_download_redirect_strips_key_on_google_storage(self):
         import urllib.error
         captured=[]
@@ -234,6 +251,176 @@ class GeneratedVideoTests(unittest.TestCase):
         self.assertNotIn("X-goog-api-key",dict(captured[1].header_items()))
         with self.assertRaisesRegex(ValueError,"Gemini Files URI"):
             client.download("https://example.com/video.mp4")
+
+
+class OmniVideoTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name)
+        self.config=C.read(SKILLS/"marketing-omni-video/assets/omni.example.json")
+        self.path=self.root/"omni.json"
+
+    def prepare(self):
+        C.save(self.path,self.config)
+        return OMNI.prepare(self.path)
+
+    def image(self):
+        if Image is None:
+            self.skipTest("Install Pillow")
+        Image.new("RGB",(12,12),"blue").save(self.root/"source.png")
+        return {"type":"image","path":"source.png","role":"first_frame"}
+
+    def video(self,role="video_source",seconds=8):
+        return {"type":"video","uri":"files/source123","durationSeconds":seconds,"role":role}
+
+    def completed(self):
+        return {"id":"v1_mock123","status":"completed","steps":[
+            {"type":"model_output","content":[{"type":"video","mime_type":"video/mp4","uri":"files/output123"}]}]}
+
+    def prior(self,store=True):
+        self.config["store"]=store
+        body,meta=self.prepare()
+        C.submit(body,meta,self.root/"prior",OMNI,meta["requestSha256"],"User approved mock",FakeClient([self.completed()]))
+        return self.root/"prior"
+
+    def test_omni_text_dry_run_and_real_approval_gate(self):
+        body,meta=self.prepare()
+        self.assertEqual(body["response_format"]["duration"],"5s")
+        self.assertEqual(body["response_format"]["delivery"],"uri")
+        self.assertEqual(OMNI.endpoint(meta),"/v1beta/interactions")
+        with self.assertRaisesRegex(ValueError,"explicit user approval"):
+            C.submit(body,meta,self.root/"unapproved",OMNI)
+        env={k:v for k,v in os.environ.items() if k!="GEMINI_API_KEY"}
+        result=subprocess.run([sys.executable,str(SKILLS/"marketing-omni-video/scripts/omni_video.py"),"submit",str(self.path),
+            "--out",str(self.root/"dry"),"--dry-run"],env=env,capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertFalse((self.root/"dry").exists())
+
+    def test_omni_first_last_loop_and_reference_bindings(self):
+        first=self.image()
+        for mode,media in (("image",[first]),("interpolate",[first,{**first,"role":"last_frame"}]),("loop",[first]),
+                           ("reference",[{**first,"role":"image_reference"},self.video("video_reference",3)])):
+            self.config.update(mode=mode,media=media)
+            body,meta=self.prepare()
+            prompt=body["input"][-1]["text"]
+            if mode=="reference":
+                self.assertIn("<IMAGE_REF_0>@Image1",prompt)
+                self.assertIn("<VIDEO_REF_0>@Video1",prompt)
+            else:
+                self.assertIn("<FIRST_FRAME>@Image1",prompt)
+                if mode in {"loop","interpolate"}:
+                    self.assertIn("<LAST_FRAME>@Image1" if mode=="loop" else "<LAST_FRAME>@Image2",prompt)
+            self.assertNotIn("generation_config",body)
+            self.assertEqual(meta["mode"],mode)
+
+    def test_omni_uploaded_edit_extend_and_upscale(self):
+        source=self.video()
+        for mode in ("edit","extend","upscale"):
+            self.config.update(mode=mode,media=[source],resolution="4k" if mode=="upscale" else "720p")
+            if mode=="upscale":
+                self.config.pop("durationSeconds",None)
+            body,meta=self.prepare()
+            self.assertIn("<VIDEO_0>@Video1",body["input"][-1]["text"])
+            self.assertEqual(meta["expected"]["durationSeconds"],13 if mode=="extend" else 8 if mode=="upscale" else 5)
+
+    def test_omni_multi_turn_edit_and_extension_use_stored_identity(self):
+        self.prior()
+        self.config.update(mode="edit",previousRun="prior")
+        body,meta=self.prepare()
+        self.assertEqual(body["previous_interaction_id"],"v1_mock123")
+        self.config.update(mode="extend",durationSeconds=10)
+        _,meta=self.prepare()
+        self.assertEqual(meta["expected"]["durationSeconds"],15)
+        self.config.pop("previousRun")
+        self.config.update(previousInteractionId="v1_mock123",sourceDurationSeconds=35)
+        with self.assertRaisesRegex(ValueError,"40s"):
+            self.prepare()
+
+    def test_store_false_prevents_chaining_and_retrieval(self):
+        self.prior(store=False)
+        self.config.update(mode="edit",previousRun="prior")
+        with self.assertRaisesRegex(ValueError,"store=false"):
+            self.prepare()
+        with self.assertRaisesRegex(ValueError,"store=false"):
+            C.status(self.root/"prior",OMNI,FakeClient())
+
+    def test_unsupported_controls_and_duration_limits_fail_locally(self):
+        original=dict(self.config)
+        for updates in ({"negativePrompt":"No cats"},{"temperature":.1},{"durationSeconds":11},{"aspectRatio":"4:5"},
+                        {"mode":"edit","media":[self.video(seconds=11)]},
+                        {"mode":"reference","media":[self.video("video_reference",4)]},
+                        {"mode":"reference","media":[self.video("video_reference",3)]*4},
+                        {"background":True,"store":False},{"media":[{"type":"audio","role":"image_reference","uri":"files/audio"}]}):
+            self.config={**original,**updates}
+            with self.subTest(updates=updates),self.assertRaises(ValueError):
+                self.prepare()
+
+    def test_raw_steps_ignore_source_and_thought_video_echoes(self):
+        result=self.completed()
+        result["steps"].insert(0,{"type":"user_input","content":[{"type":"video","uri":"files/source-secret"}]})
+        result["steps"].insert(1,{"type":"thought","content":[{"type":"video","uri":"files/thought-secret"}]})
+        update,videos=OMNI.parse_response(result)
+        self.assertEqual(len(videos),1)
+        self.assertEqual(videos[0]["uri"],"files/output123")
+        self.assertNotIn("steps",update)
+
+    def test_creation_uri_is_preserved_when_get_returns_inline(self):
+        self.prior()
+        result=self.completed()
+        raw=b"\x00\x00\x00\x18ftypisom"+b"synthetic"
+        result["steps"][0]["content"][0]={"type":"video","mime_type":"video/mp4","data":base64.b64encode(raw).decode()}
+        _,state=C.status(self.root/"prior",OMNI,FakeClient([result]))
+        self.assertEqual(state["outputs"][0]["uri"],"files/output123")
+        self.assertEqual((self.root/"prior/received-1.mp4").read_bytes(),raw)
+
+    def test_stream_assembles_video_and_checkpoints_without_input_or_thoughts(self):
+        events=[{"event_type":"interaction.created","interaction":{"id":"v1_stream","status":"in_progress"}},
+                {"event_type":"step.start","index":0,"step":{"type":"thought"}},
+                {"event_type":"step.delta","index":0,"delta":{"type":"video","uri":"files/private-thought"}},
+                {"event_type":"step.start","index":1,"step":{"type":"model_output"}},
+                {"event_type":"step.delta","index":1,"delta":{"type":"video","mime_type":"video/mp4","uri":"files/generated"}},
+                {"event_type":"step.stop","index":1},
+                {"event_type":"interaction.completed","interaction":{"id":"v1_stream","status":"completed"}}]
+        stream=io.BytesIO(b"".join(b"data: "+json.dumps(e).encode()+b"\n\n" for e in events))
+        progress=[]
+        result=C.read_stream(stream,progress.append)
+        self.assertEqual(progress[0]["id"],"v1_stream")
+        self.assertEqual(OMNI.parse_response(result)[1][0]["uri"],"files/generated")
+        self.assertNotIn("private-thought",json.dumps(result))
+
+    def test_interrupted_stream_keeps_interaction_identity(self):
+        self.config["stream"]=True
+        body,meta=self.prepare()
+        class Interrupted(FakeClient):
+            def send(self,*args,**kwargs):
+                self.on_progress({"id":"v1_interrupted","status":"in_progress"})
+                raise TimeoutError("simulated")
+        with self.assertRaises(TimeoutError):
+            C.submit(body,meta,self.root/"stream",OMNI,meta["requestSha256"],"User approved mock",Interrupted())
+        state=C.read(self.root/"stream/state.json")
+        self.assertEqual(state["interactionId"],"v1_interrupted")
+        self.assertEqual(state["status"],"failed-or-unknown")
+
+    def test_background_cancellation_and_task_override(self):
+        self.config.update(background=True,task="text_to_video")
+        body,meta=self.prepare()
+        self.assertEqual(body["generation_config"]["video_config"]["task"],"text_to_video")
+        result={"id":"v1_running","status":"in_progress"}
+        C.submit(body,meta,self.root/"background",OMNI,meta["requestSha256"],"User approved mock",FakeClient([result]))
+        client=FakeClient([{"id":"v1_running","status":"cancelled"}])
+        state=OMNI.cancel(self.root/"background",client)
+        self.assertEqual(state["status"],"cancelled")
+        self.assertEqual(client.calls[0][1],"/v1beta/interactions/v1_running/cancel")
+
+    def test_upload_timeout_retains_lookup_metadata(self):
+        self.image()
+        with self.assertRaises(TimeoutError):
+            C.upload(self.root/"source.png",self.root/"upload",FakeClient([TimeoutError("simulated")]))
+        state=C.read(self.root/"upload/state.json")
+        self.assertEqual(state["status"],"failed-or-unknown")
+        self.assertIn("displayName",state)
+        self.assertNotIn("data",state)
 
 
 if __name__=="__main__":
