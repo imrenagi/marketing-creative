@@ -258,7 +258,7 @@ See [AGENTS.md](AGENTS.md) for contributor guidance, validation, credential hand
 
 ### Automated releases
 
-The public release line starts at `v0.1.0`. Every push to `main` with new commits runs offline Python and Node tests and package validation before semantic-release publishes a GitHub release. Pull requests run validation only. Both jobs use `runs-on: [self-hosted, linux]`; the repository must have access to an online runner with those labels, Git, Python setup support and Node setup support. FFmpeg enables the optional local media-conversion regression.
+The public release line starts at `v0.1.0`. Every push to `main` with new commits runs offline Python and Node tests and package validation before semantic-release publishes a GitHub release. Pull requests run validation only. Both jobs use the standard GitHub-hosted `ubuntu-latest` runner, which is [free for public repositories](https://docs.github.com/en/actions/reference/runners/github-hosted-runners). Python and Node are configured by setup actions. FFmpeg enables the optional local media-conversion regression.
 
 Commit messages determine the highest version bump since the last tag: `feat: ...` produces a minor release, `feat!: ...` or a `BREAKING CHANGE:` footer produces a major release, and all other changes produce a patch release, including skill documentation and ordinary commit messages. A rerun without new commits creates no release. Keep using conventional commits so the generated release notes identify changes clearly, including skill documentation.
 
