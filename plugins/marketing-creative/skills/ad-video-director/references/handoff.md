@@ -1,5 +1,7 @@
 # A brief someone can execute
 
+Marketing strategy now belongs to [marketing-brief](../../marketing-brief/SKILL.md); distinct concepts and the selected creative brief belong to [creative-ideation](../../creative-ideation/SKILL.md). This reference describes the selected idea's executable script. Preserve supplied upstream decisions instead of repeating intake.
+
 Scale the deliverable to the request. A short revision needs less material than a campaign, but exact words and actions still matter.
 
 ## Brief
@@ -31,3 +33,5 @@ Include decisions needed to shoot: captures, talent direction, hierarchy, brand 
 Supply placement copy when it matters: primary text, headline, CTA/button suggestion, cover. Avoid invented character limits; make the first visible caption useful without "see more."
 
 For actual production, hand the script, runtime, aspect ratio, assets, factual constraints, and authorization state to the available workflow. This skill requires no renderer, API, account, paid tool, or other skill. Never claim an MP4 exists when the deliverable is a script.
+
+Use [motion-video-producer](../../motion-video-producer/SKILL.md) for authorized production and the [project contract](../../motion-video-producer/references/project-contract.md) for script segment IDs. Record every requested placement/ratio, including adaptations between 16:9, 9:16, 4:5 and 1:1. The upstream briefs may be supplied equivalents rather than files; exact scripting remains usable independently of the production runtime.

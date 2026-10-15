@@ -14,3 +14,22 @@ Run these by loading the skill and only the raw brief/reference needed for each 
 | Creator comment reply requested without an authentic comment | Uses a labeled question/FAQ instead of manufacturing a customer endorsement; distinguishes demonstrator from real customer |
 
 Keep sample-specific analyses, raw media, trial outputs, and evaluation outcomes local unless explicitly selected for publication. Do not infer successful installation, model behavior, or ad performance from structural packaging checks.
+
+## Revised suite scenarios
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Strategy-only request | Marketing brief records objective/metric, audience/barrier, supported claims and placement requirements; does not force a hook or start production |
+| Open brief followed by selection | Concepts differ in mechanism; selected creative brief retains ID/evidence; director scripts chosen idea without repeated intake |
+| Supplied selected concept/script | Producer resumes downstream without unnecessary campaign interview |
+| Desktop landscape, mobile Reels, portrait feed and square | Four canvases configured; placements distinguished from device; independent layout/frame/export checks |
+| Real captures and no verified trial | Capture/image/footage or custom generator path explicit; illustrative UI is not proof; no invented offer |
+| Narration arrives later | Provisional seconds replaced by word cues; missing alignment precision reported |
+| Repeated CTA or Mandarin phrase | Ambiguity fails unless occurrence supplied; Han characters preserved; segmentation limits identified |
+| CTA revision | Dry-run shows span/context; backup; synchronized script/audio/alignment; visual copy/cues/captions and neighboring beats reviewed |
+| User edited generated HTML | Edits preserved/reconciled before rebuilding |
+| Intentional silence/stillness | Editorial choices distinguished from broken coverage; no forced continuous motion |
+| Runtime/browser/provider unavailable | Exact pending validation reported; no false rendered-delivery claim |
+| Wrong-ratio/missing-audio/stale encode | Affected export fails; actual file/build hashes recorded after current render |
+
+Executable regressions live in tests/test_production.py. Browser/framework smoke tests use temporary projects and local dependencies. Review actual snapshots and listen to audio where applicable. Fixtures and screenshots are not committed as finished campaign assets.

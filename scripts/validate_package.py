@@ -21,13 +21,34 @@ def package_files():
     """An explicit surface allowlist; never archive the repository root."""
     files = [PLUGIN / kind / "plugin.json"
              for kind in (".codex-plugin", ".claude-plugin")]
+    require(not PLUGIN.is_symlink() and not (PLUGIN / "skills").is_symlink(),
+            "Plugin and skill roots must not be symlinks")
     for path in sorted((PLUGIN / "skills").rglob("*")):
         require(not path.is_symlink(), f"Symlink is not a distributable asset: {path}")
+        if "__pycache__" in path.parts:
+            continue
         if path.is_file():
-            require(path.suffix in {".md", ".yaml"}, f"Unexpected skill asset: {path}")
+            relative = path.relative_to(PLUGIN / "skills")
+            allowed = (len(relative.parts) == 2 and relative.name == "SKILL.md") or (
+                len(relative.parts) >= 3 and relative.parts[1] in {
+                    "agents", "references", "scripts", "assets"
+                } and path.suffix in {
+                    "agents": {".yaml"}, "references": {".md"},
+                    "scripts": {".py", ".mjs"}, "assets": {".json", ".svg", ".html"}
+                }[relative.parts[1]])
+            require(allowed, f"Unexpected skill asset: {path}")
             files.append(path)
+    notices = PLUGIN / "third-party"
+    require(not notices.is_symlink(), "Third-party root must not be a symlink")
+    expected_notices = {"bang-motion.LICENSE", "hyperframe-pro.LICENSE"}
+    require({p.name for p in notices.iterdir()} == expected_notices,
+            "Unexpected or missing third-party notices")
+    files.extend(notices / name for name in sorted(expected_notices))
     for path in files:
         require(path.is_file() and not path.is_symlink(), f"Missing/unsafe package file: {path}")
+        require(path.resolve().is_relative_to(PLUGIN.resolve()), f"Package file escapes plugin: {path}")
+        require(not any(parent.is_symlink() for parent in path.parents if parent.is_relative_to(PLUGIN)),
+                f"Symlinked package ancestor: {path}")
     return files
 
 
@@ -59,7 +80,10 @@ def validate():
         require((ROOT / source).resolve() == PLUGIN, "Source must resolve from repository root")
 
     skills = sorted((PLUGIN / "skills").glob("*/SKILL.md"))
-    require(bool(skills), "No discoverable skills")
+    expected_skills = {"marketing-brief", "creative-ideation", "ad-video-director",
+                       "motion-video-producer", "motion-art-director", "motion-storyboard",
+                       "motion-voice", "motion-composer", "motion-video-qa"}
+    require({s.parent.name for s in skills} == expected_skills, "Missing/unexpected suite skills")
     for skill in skills:
         text = skill.read_text(encoding="utf-8")
         require(text.startswith("---\n"), f"Missing frontmatter: {skill}")
@@ -85,6 +109,8 @@ def validate():
                 resolved = (path.parent / target.split("#", 1)[0]).resolve()
                 require(resolved.is_relative_to(PLUGIN) and resolved.exists(),
                         f"Broken or escaping resource link: {path}: {target}")
+        if path.suffix == ".json":
+            read_json(path)
     return files
 
 

@@ -1,8 +1,18 @@
 {
   "name": "marketing-creative",
-  "version": "0.1.0",
-  "description": "Research-backed product ad strategy, creative briefs, hooks, timed scripts, copy and production direction.",
-  "author": {"name": "Imre Nagi"},
+  "version": "0.2.0",
+  "description": "Marketing briefs, creative concepts, exact ad scripts and video production with narration revisions, QA and four canvas ratios.",
+  "author": {
+    "name": "Imre Nagi"
+  },
   "repository": "https://github.com/imrenagi/marketing-creative",
-  "keywords": ["advertising", "video", "creative-direction", "copywriting"]
+  "keywords": [
+    "marketing",
+    "advertising",
+    "video",
+    "creative-direction",
+    "motion-graphics",
+    "narration",
+    "hyperframes"
+  ]
 }

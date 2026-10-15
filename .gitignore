@@ -1,2 +1,6 @@
 /samples/
 /local-docs/
+__pycache__/
+*.pyc
+.env
+.env.*

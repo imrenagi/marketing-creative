@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a deterministic skills-only ZIP for both supported plugin clients."""
+"""Build a deterministic skill/tool/resource ZIP for both supported clients."""
 import argparse
 from pathlib import Path
 import zipfile

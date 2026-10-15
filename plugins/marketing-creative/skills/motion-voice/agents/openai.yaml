@@ -1,0 +1,4 @@
+interface:
+  display_name: "Motion Voice"
+  short_description: "Align narration and revise audio without drift"
+  default_prompt: "Use $motion-voice to prepare aligned narration or revise a spoken line in my video."

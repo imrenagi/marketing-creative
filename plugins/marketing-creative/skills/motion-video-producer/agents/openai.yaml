@@ -1,0 +1,4 @@
+interface:
+  display_name: "Motion Video Producer"
+  short_description: "Coordinate video production and requested exports"
+  default_prompt: "Use $motion-video-producer to produce my selected video concept in the requested ratios."

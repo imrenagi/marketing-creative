@@ -1,12 +1,16 @@
 {
   "name": "marketing-creative",
-  "owner": {"name": "Imre Nagi"},
-  "metadata": {"description": "Product advertising and creative direction skills"},
+  "owner": {
+    "name": "Imre Nagi"
+  },
+  "metadata": {
+    "description": "Marketing strategy, creative ideation and video production skills"
+  },
   "plugins": [
     {
       "name": "marketing-creative",
       "source": "./plugins/marketing-creative",
-      "description": "Product ad briefs, hooks, timed scripts, copy and production plans"
+      "description": "Nine skills from marketing brief and concepts to multi-ratio video production"
     }
   ]
 }

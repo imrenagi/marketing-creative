@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marketing Brief"
+  short_description: "Define goals, audience, evidence and placements"
+  default_prompt: "Use $marketing-brief to create a marketing brief from my product facts and campaign goal."
