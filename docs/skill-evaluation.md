@@ -33,3 +33,23 @@ Keep sample-specific analyses, raw media, trial outputs, and evaluation outcomes
 | Wrong-ratio/missing-audio/stale encode | Affected export fails; actual file/build hashes recorded after current render |
 
 Executable regressions live in tests/test_production.py. Browser/framework smoke tests use temporary projects and local dependencies. Review actual snapshots and listen to audio where applicable. Fixtures and screenshots are not committed as finished campaign assets.
+
+## Image workflow scenarios
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Brief, optional references and an open concept count | Chooses enough distinct ideas for the task; chooses a readable sheet ratio/grid; one board request; each occupied cell crops to its stable concept ID |
+| Five or eleven concepts, portrait/landscape sheet | No fixed nine-item requirement; explicit or automatic grid has sufficient cells; blank trailing cells are not saved as assets |
+| No reference, or product plus style references | Brief-only generation works; supplied references are viewed and assigned roles; final selected tile has the correct image index |
+| Concept selected from the board | Stable ID maps to its own crop; standalone request uses original source plus selected tile; unselected ideas are not generated |
+| Multi-slide carousel instead of alternatives | Plan preserves slide order and continuity; does not force nine unrelated concepts |
+| Model adds gutters or uneven cells | Inspects board and uses measured crop boxes or deliberate revision; does not claim geometric splitting verified composition |
+| Request nine production-resolution images | Explains preview resolution; reconstructs selected finals separately, instead of claiming nine 4K files from a single 4K board |
+| Three selected finals with flexible deadline | Uses actual Batch API, persists job identity, returns for status/download later; distinguishes discount from output quality |
+| One failed batch item, one wrong-ratio response | Preserves successes and wrong-ratio bytes, flags item errors and review issues; no automatic paid resubmission |
+| Submission timeout or interrupted download | Unknown submission retains state for provider lookup; interrupted collection resumes with matching files and no new generation |
+| Transparent product/reference or changed local tile | Crops preserve alpha; changed tile hash requires deliberate reconciliation |
+| Square, portrait feed, vertical and landscape images | Requests 1:1, 4:5, 9:16 and 16:9 explicitly; checks actual dimensions and current placement specifications |
+| No key or live provider validation | Dry-run and splitting work without credentials; reports that offline validation does not establish real model quality/access |
+
+Executable image regressions live in tests/test_marketing_images.py and use synthetic pixels and mocked API responses. Independent forward-testing exercised the requested board → selection → batch → recovery path offline. Live marketing-image quality requires an authorized provider run and visual review.

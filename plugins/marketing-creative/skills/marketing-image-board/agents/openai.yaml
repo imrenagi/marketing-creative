@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marketing Image Board"
+  short_description: "Explore tiled image concepts in one Gemini call"
+  default_prompt: "Use $marketing-image-board to explore concepts from my brief and any reference images, choosing a suitable count, sheet ratio and croppable tile layout."

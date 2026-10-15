@@ -4,13 +4,13 @@
     "name": "Imre Nagi"
   },
   "metadata": {
-    "description": "Marketing strategy, creative ideation and video production skills"
+    "description": "Marketing strategy, creative ideation, image assets and video production skills"
   },
   "plugins": [
     {
       "name": "marketing-creative",
       "source": "./plugins/marketing-creative",
-      "description": "Nine skills from marketing brief and concepts to multi-ratio video production"
+      "description": "Eleven skills from marketing brief and concepts to Gemini image assets and multi-ratio video production"
     }
   ]
 }

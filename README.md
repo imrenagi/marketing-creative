@@ -1,6 +1,6 @@
 # Marketing Creative
 
-Nine agent skills take a campaign from marketing strategy through creative ideas, exact scripts and animated video production. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
+Eleven agent skills take a campaign from marketing strategy through creative ideas, image assets, exact scripts and animated video production. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
 
 ## Skills and handoffs
 
@@ -8,6 +8,8 @@ Nine agent skills take a campaign from marketing strategy through creative ideas
 | --- | --- |
 | `marketing-brief` | Product facts, research and goal → strategic brief, evidence, placement requirements |
 | `creative-ideation` | Marketing brief → distinct concepts and selected creative brief |
+| `marketing-image-board` | Brief, concepts and optional references → one board with a chosen tile count/ratio and locally cropped previews |
+| `marketing-image-producer` | Brief or selected concepts/tiles, with optional references → standalone image assets or discounted asynchronous Gemini batches |
 | `ad-video-director` | Selected idea and brief → exact script, copy, shot direction and production handoff |
 | `motion-video-producer` | Authorized production request → coordinated project and deliverables |
 | `motion-art-director` | Selected concept and brand → visual system, camera and motion language |
@@ -53,6 +55,12 @@ For clients without plugin support, reference the complete skill tree from the c
 
 > Use $motion-voice to replace this CTA in the existing recording. Preview the matched phrase first, preserve the original take and retime downstream cues.
 
+> Use $marketing-image-board with this product image and marketing brief. Show nine distinct Instagram/ad concepts in one square 3×3 board, then split the previews locally.
+
+> Use $marketing-image-board with this brief and any attached references. Choose a useful number of concepts and a portrait or landscape sheet layout. Ensure each concept can be cropped separately.
+
+> Use $marketing-image-producer to regenerate my three selected tiles as separate 4K assets through Gemini's discounted Batch API. Keep the original source image as the product reference.
+
 ## Production tools
 
 Planning needs no renderer, account, API key or paid service. Project validation uses Python 3.9+; composition uses Node 20+. HyperFrames is the external default preview/render runtime. FFmpeg/FFprobe are needed for audio conversion and encoded-file checks. Playwright plus a Chromium browser is optional for the visual probe. ElevenLabs is one optional TTS adapter; supplied audio/alignment works without it.
@@ -64,8 +72,9 @@ Keep optional credentials outside this repository, in **`~/.config/marketing-cre
 | Credential | Used by | Required when |
 | --- | --- | --- |
 | `ELEVENLABS_API_KEY` | `motion-voice/scripts/voice.py` | Generating narration or a replacement phrase through the ElevenLabs adapter |
+| `GEMINI_API_KEY` | `marketing-image-producer/scripts/gemini_images.py` | Generating an image board, standalone final, or submitting/checking/downloading a Gemini batch |
 
-No API key is required for briefs, ideation, scripts, supplied audio/alignment, pause trimming, supplied replacement audio, composition, or local QA. External image/media connectors and HyperFrames manage their own authentication; this package does not currently read `FAL_KEY`, OpenAI keys, or HyperFrames credentials directly.
+No API key is required for text-only briefs/ideation, scripts, local board splitting, supplied audio/alignment, pause trimming, supplied replacement audio, composition, or local QA. Gemini image generation requires its key and API project access. Other external image/media connectors and HyperFrames manage their own authentication; this package does not currently read `FAL_KEY`, OpenAI keys, or HyperFrames credentials directly.
 
 Create the local file, then edit it with your editor:
 
@@ -80,6 +89,7 @@ Its contents use shell assignment syntax (replace the example value locally):
 
 ```sh
 ELEVENLABS_API_KEY='your-elevenlabs-api-key'
+GEMINI_API_KEY='your-gemini-api-key'
 ```
 
 Export it in the **same shell that invokes the helper**, without printing its contents:
@@ -94,6 +104,52 @@ python3 "$SUITE/motion-voice/scripts/voice.py" generate /path/to/video-project -
 Set `SUITE` to the installed skills directory (or the checkout path shown below). The dry-run makes no API call. Omit `--dry-run` only when ready to generate. For agent-run commands, have the agent load the local file in the helper's shell; a desktop app launched separately may not inherit your terminal's environment.
 
 `voice-config.json` contains nonsecret voice/model IDs, language, voice settings and an optional seed; it does not contain the API key. Never place credentials in skill files, project JSON, prompts, commits, or release archives. Repository `.env` files are also ignored as a precaution.
+
+Get the Gemini key from [Google AI Studio](https://aistudio.google.com/apikey), using the intended API project and billing/model access. A Gemini consumer subscription is separate from API credentials and quota. Store the key only in the external `.env` or a secret manager, then use the explicit shell export above before calling the image helper. It accepts `GEMINI_API_KEY`; `GOOGLE_API_KEY` is not an implicit fallback.
+
+### Marketing images: board first, selected finals second
+
+The default is **Nano Banana 2.1 (`gemini-nano-banana-2.1`)**, verified against Google's [model documentation](https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1) on 2026-10-15. Use `--model` for a deliberate alternate; the helper never silently switches models.
+
+Image helpers need Python 3.10+ and Pillow (no Google SDK). Install in a separate environment:
+
+```sh
+SUITE="$PWD/plugins/marketing-creative/skills"
+python3 -m venv /path/to/image-tools-env
+/path/to/image-tools-env/bin/python -m pip install -r "$SUITE/marketing-image-producer/scripts/requirements.txt"
+PYTHON=/path/to/image-tools-env/bin/python
+IMG_TOOL="$SUITE/marketing-image-producer/scripts/gemini_images.py"
+SPLIT_TOOL="$SUITE/marketing-image-board/scripts/split_board.py"
+```
+
+Copy the [campaign example](plugins/marketing-creative/skills/marketing-image-board/assets/campaign.example.json) into your work directory. Its nine-cell square layout is only an example: choose the concept count for the brief and set any supported sheet ratio/rows/columns, or omit `grid` for automatic packing. A partially occupied last row is allowed; unused cells stay blank and are not cropped. Each concept has a stable ID and a distinct prompt. Use the same saved plan for generation and splitting.
+
+References are optional. Use `references: []` or omit reference fields for brief-only generation. For one or more inputs, use `"references": [{"path": "product.png", "role": "product"}, {"path": "look.png", "role": "style"}]`, with paths relative to the plan. The example's older single `reference` string remains supported; use either field. Repeated `--reference /path/to/image.png` flags override the plan's references. Up to fourteen reference images are supported per request, including a selected tile. Image plans contain no credentials.
+
+Image generation supports **1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9, 1:4, 4:1, 1:8 and 8:1** with the default model, as listed in Google's [image-generation guide](https://ai.google.dev/gemini-api/docs/image-generation). The sheet ratio and each final asset's ratio are separate settings. The splitter reads the same resolved grid as generation; each equal-grid crop inherits the cell shape, and selected finals are recomposed at their intended ratios.
+
+```sh
+# One billable generation request for the whole board, whatever its tile count.
+"$PYTHON" "$IMG_TOOL" board campaign.json --out /path/to/work/board-v1 --dry-run
+"$PYTHON" "$IMG_TOOL" board campaign.json --out /path/to/work/board-v1
+
+# Use the actual returned image filename from assets.json.
+"$PYTHON" "$SPLIT_TOOL" /path/to/work/board-v1/board.png --plan campaign.json --out /path/to/work/tiles-v1
+
+# Regenerate only selected designs as separate higher-resolution assets.
+"$PYTHON" "$IMG_TOOL" batch-submit campaign.json --select demo objection action --tiles /path/to/work/tiles-v1 --size 4K --out /path/to/work/finals-v1 --dry-run
+"$PYTHON" "$IMG_TOOL" batch-submit campaign.json --select demo objection action --tiles /path/to/work/tiles-v1 --size 4K --out /path/to/work/finals-v1
+"$PYTHON" "$IMG_TOOL" batch-status /path/to/work/finals-v1
+"$PYTHON" "$IMG_TOOL" batch-download /path/to/work/finals-v1
+```
+
+Run actual generation only within your intended spend. The example assumes the environment was exported in this shell. Use a fresh run directory for every submission; state is saved before the API call. Status/download resume the existing job without resubmitting, including interrupted downloads with matching existing image hashes. Unexpected ratios are preserved and flagged for review. For an immediate single final, use `image ... --select demo`; cancellation uses `batch-cancel JOB_DIR`.
+
+The board command makes one `generateContent` call for all concepts. More tiles leave fewer pixels per concept; for example, a 2K square 3×3 board gives approximately 682-pixel tiles. Splitting is local and does not create full-resolution assets. Inspect cell boundaries and spelling; use measured crop boxes if the model did not follow the grid. Selected finals use any supplied original references plus their tile and are regenerated individually, not merely upscaled. Direct standalone and batch generation also work from a brief without reference images.
+
+Batch uses the actual asynchronous Gemini Batch API, with automatic inline/JSONL transport. Google currently documents [50% of equivalent standard inference cost and a target turnaround up to 24 hours](https://ai.google.dev/gemini-api/docs/batch-api). Concurrent standard calls do not receive that discount. Board savings depend on resolution and input/output tokens; they are not a guaranteed ninefold reduction. Batch changes cost/latency, while full-resolution regeneration is the quality step.
+
+See the [image workflow](plugins/marketing-creative/skills/marketing-image-producer/references/image-workflow.md), [board guidance](plugins/marketing-creative/skills/marketing-image-board/references/board-workflow.md) and [API source register](plugins/marketing-creative/skills/marketing-image-producer/references/gemini-api.md) for plan fields, errors, output manifests and model/API verification.
 
 The following runs an **original fictional construction example**, not a ready-made ad. Outputs stay outside the repository:
 
@@ -113,6 +169,9 @@ Canvas presets are 1920×1080, 1080×1920, 1080×1350 and 1080×1080. They are n
 ## Validate and package
 
 ```sh
+# Activate the image-tools environment above to run all image tests.
+. /path/to/image-tools-env/bin/activate
+python3 -m pip install -r plugins/marketing-creative/skills/marketing-image-producer/scripts/requirements.txt
 python3 -m unittest discover -s tests -v
 python3 scripts/validate_package.py
 claude plugin validate ./plugins/marketing-creative

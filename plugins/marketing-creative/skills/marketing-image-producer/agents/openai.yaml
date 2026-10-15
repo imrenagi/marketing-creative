@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marketing Image Producer"
+  short_description: "Generate selected assets with Gemini batch pricing"
+  default_prompt: "Use $marketing-image-producer to generate selected marketing images individually or through the Gemini Batch API."

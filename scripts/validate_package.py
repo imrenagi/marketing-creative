@@ -36,6 +36,8 @@ def package_files():
                     "agents": {".yaml"}, "references": {".md"},
                     "scripts": {".py", ".mjs"}, "assets": {".json", ".svg", ".html"}
                 }[relative.parts[1]])
+            allowed = allowed or (relative.parts[1:] == ("scripts", "requirements.txt")
+                                  and relative.parts[0] == "marketing-image-producer")
             require(allowed, f"Unexpected skill asset: {path}")
             files.append(path)
     notices = PLUGIN / "third-party"
@@ -82,7 +84,8 @@ def validate():
     skills = sorted((PLUGIN / "skills").glob("*/SKILL.md"))
     expected_skills = {"marketing-brief", "creative-ideation", "ad-video-director",
                        "motion-video-producer", "motion-art-director", "motion-storyboard",
-                       "motion-voice", "motion-composer", "motion-video-qa"}
+                       "motion-voice", "motion-composer", "motion-video-qa",
+                       "marketing-image-board", "marketing-image-producer"}
     require({s.parent.name for s in skills} == expected_skills, "Missing/unexpected suite skills")
     for skill in skills:
         text = skill.read_text(encoding="utf-8")

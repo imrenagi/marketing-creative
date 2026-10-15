@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "reference": "product.png",
+  "brief": "Fictional Orbit task app helps teams assign and review work. Goal: first completed assignment. No price, trial, performance statistic or testimonial is verified.",
+  "style": "Use the supplied product identity. Clear editorial layouts, one focal point, concise Indonesian copy.",
+  "grid": {
+    "rows": 3,
+    "columns": 3,
+    "aspectRatio": "1:1"
+  },
+  "items": [
+    {
+      "id": "demo",
+      "prompt": "Product-led task assignment demonstration, readable product focal crop.",
+      "copy": "Mulai satu tugas",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "handoff",
+      "prompt": "An object relay metaphor for a team handoff, grounded in the product.",
+      "copy": "Teruskan dengan jelas",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "objection",
+      "prompt": "A calm visual addressing uncertainty about the next action, no invented features.",
+      "copy": "Langkah berikutnya jelas",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "focus",
+      "prompt": "Minimal product hero with strong negative space and one clear focal detail.",
+      "copy": "Fokus pada pekerjaan",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "collage",
+      "prompt": "Editorial collage of task-related objects around the supplied product identity.",
+      "copy": "Satukan alurnya",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "typography",
+      "prompt": "Typographic poster using brand palette with a small faithful product detail.",
+      "copy": "Satu langkah berarti",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "process",
+      "prompt": "A simple visual process from assignment to review, no quantified outcome.",
+      "copy": "Dari tugas ke tinjauan",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "detail",
+      "prompt": "Close-up detail of supplied product with careful lighting and restrained copy.",
+      "copy": "Lihat cara kerjanya",
+      "aspectRatio": "1:1"
+    },
+    {
+      "id": "action",
+      "prompt": "A clear action-oriented brand composition, preserve actual source identity.",
+      "copy": "Coba satu tugas",
+      "aspectRatio": "1:1"
+    }
+  ]
+}

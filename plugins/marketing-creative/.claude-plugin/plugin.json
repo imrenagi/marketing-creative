@@ -1,7 +1,7 @@
 {
   "name": "marketing-creative",
-  "version": "0.2.0",
-  "description": "Marketing briefs, creative concepts, exact ad scripts and video production with narration revisions, QA and four canvas ratios.",
+  "version": "0.3.0",
+  "description": "Marketing briefs, creative concepts, image boards and Gemini batch assets, plus multi-ratio video production and QA.",
   "author": {
     "name": "Imre Nagi"
   },
@@ -13,6 +13,9 @@
     "creative-direction",
     "motion-graphics",
     "narration",
-    "hyperframes"
+    "hyperframes",
+    "image-generation",
+    "gemini",
+    "nano-banana"
   ]
 }
