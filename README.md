@@ -187,6 +187,19 @@ The [Omni capabilities](plugins/marketing-creative/skills/marketing-omni-video/r
 
 Uploaded edit/extension sources are limited to ten seconds; likeness reference videos to three seconds each. Generated multi-turn extensions can target a combined forty seconds. Standalone audio references and voice editing are unsupported; describe generated sound in the prompt, or use the suite's voice/audio workflow. Stored interactions support later edits; `store=false` disables later retrieval/chaining. Each edit, extension or upscale is a new paid request. The helper preserves received bytes/creation URIs and never automatically regenerates on interruption. Cancellation is available for running background Omni requests when asked, without a refund guarantee.
 
+For later conversational changes, the Python helper resumes the chosen run's stored video context. Prepare a revision config with a new `id`, follow-up `prompt` and current `costEstimate`; omitted model, ratio, resolution and edit duration inherit from that run:
+
+```sh
+"$PYTHON" "$OMNI_TOOL" history /path/to/work/omni-v1
+"$PYTHON" "$OMNI_TOOL" continue /path/to/work/omni-v1 revision.json --out /path/to/work/omni-v2 --dry-run
+# After explicit approval of this revision:
+"$PYTHON" "$OMNI_TOOL" continue /path/to/work/omni-v1 revision.json --out /path/to/work/omni-v2 --approve-request SHA_FROM_DRY_RUN --approval-note 'User approved this revision in chat'
+"$PYTHON" "$OMNI_TOOL" download /path/to/work/omni-v2
+"$PYTHON" "$OMNI_TOOL" history /path/to/work/omni-v2
+```
+
+Record the selected run path in project/session notes and continue from v2 for the next edit. Parent runs and output files remain intact; an earlier run can start a deliberate branch. History is local and works after a Python/chat restart. Provider context must still be stored and available; expired/deleted context or `store=false` cannot be resumed conversationally. Pending/unknown calls use existing status/download recovery first. See the [conversation workflow](plugins/marketing-creative/skills/marketing-omni-video/references/workflow.md) for the minimal revision config and limits.
+
 ### Assemble images, clips and authored scenes
 
 `motion-video-producer` remains the orchestrator for the finished video. It chooses/reuses sources, coordinates optional approved generation, registers assets, owns sequencing and timing, then delegates composition and QA. General production authorization keeps Veo/Omni off until their particular paid request is approved.

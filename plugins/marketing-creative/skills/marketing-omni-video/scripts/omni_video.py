@@ -20,13 +20,44 @@ def interaction_id(value):
     return value
 
 
-def prepare(path):
+def prepare(path,previous_run=None):
     path=Path(path).resolve()
     config=read(path)
     require(config.get("schemaVersion")==1,"Unsupported Omni config version")
     allowed={"schemaVersion","id","model","mode","prompt","media","previousInteractionId","previousRun",
              "sourceDurationSeconds","aspectRatio","durationSeconds","resolution","delivery","background","store","stream","task","costEstimate"}
     require(set(config)<=allowed,"Unknown Omni config fields; audio references, voice editing, system instructions and sampler/negative-prompt controls are unsupported")
+    if previous_run is not None:
+        require(not config.get("previousRun") and not config.get("previousInteractionId"),
+                "continue selects the previous run; omit previousRun/previousInteractionId from the config")
+        config={**config,"previousRun":str(Path(previous_run).expanduser().resolve())}
+        config.setdefault("mode","edit")
+    references=[]
+    conversation=None
+    source_duration=config.get("sourceDurationSeconds")
+    if config.get("previousRun"):
+        source=(path.parent/config["previousRun"]).resolve()
+        _,prior=V["read_run"](source,PROVIDER)
+        require(prior.get("stored",True),"Previous interaction used store=false; use its downloaded video as a new source")
+        require(prior.get("status") in {"completed","downloaded","completed-with-warnings"},"Previous Omni run is not completed; resume status/download before another paid turn")
+        previous=interaction_id(prior.get("interactionId"))
+        source_duration=prior["expected"]["durationSeconds"]
+        if (source/"assets.json").exists():
+            assets=read(source/"assets.json")["assets"]
+            require(len(assets)==1 and assets[0].get("generation",{}).get("requestSha256")==prior["requestSha256"],
+                    "Previous assets do not match the stored request")
+            source_duration=assets[0]["duration"]
+        config.setdefault("mode","edit")
+        config.setdefault("model",prior["model"])
+        config.setdefault("aspectRatio",prior["expected"]["aspectRatio"])
+        config.setdefault("resolution",prior["expected"]["resolution"])
+        if config["mode"]=="edit" and "durationSeconds" not in config:
+            require(3<=source_duration<=10.05,"Set durationSeconds explicitly when editing a source longer than 10s")
+            config["durationSeconds"]=round(source_duration)
+        references.append({"kind":"provenance","previousInteractionId":previous,
+                           "sourceRunSha256":V["sha"]((source/"state.json").read_bytes())})
+        conversation={"parentRun":str(source),"parentInteractionId":previous,
+                      "parentRequestSha256":prior["requestSha256"]}
     model=config.get("model",DEFAULT_MODEL)
     require(model in {DEFAULT_MODEL,"gemini-omni-flash-preview"},"Use a documented Omni Flash model")
     mode=config.get("mode","text")
@@ -46,19 +77,8 @@ def prepare(path):
     require(not config.get("background",False) or config.get("store",True),"Background jobs require store=true for recovery")
     previous=config.get("previousInteractionId")
     require(not (previous and config.get("previousRun")),"Use previousInteractionId or previousRun, not both")
-    references=[]
-    source_duration=config.get("sourceDurationSeconds")
     if config.get("previousRun"):
-        source=(path.parent/config["previousRun"]).resolve()
-        _,prior=V["read_run"](source,PROVIDER)
-        require(prior.get("stored",True),"Previous interaction used store=false; use its downloaded video as a new source")
-        require(prior.get("status") in {"completed","downloaded","completed-with-warnings"},"Previous Omni run is not completed")
-        previous=prior.get("interactionId")
-        source_duration=prior["expected"]["durationSeconds"]
-        if (source/"assets.json").exists():
-            source_duration=read(source/"assets.json")["assets"][0]["duration"]
-        references.append({"kind":"provenance","previousInteractionId":previous,
-                           "sourceRunSha256":V["sha"]((source/"state.json").read_bytes())})
+        previous=conversation["parentInteractionId"]
     if previous:
         interaction_id(previous)
     inputs=[]
@@ -157,8 +177,48 @@ def prepare(path):
         {"aspectRatio":ratio,"durationSeconds":expected_duration,"resolution":resolution,"fps":24,"nativeAudio":True})
     # Include recovery/privacy choices in the approved fingerprint.
     meta.update({"stored":body["store"],"background":body["background"],"stream":body["stream"]})
+    if conversation:
+        meta["conversation"]=conversation
+    elif previous:
+        meta["conversation"]={"parentInteractionId":previous}
     meta["requestSha256"]=V["sha"](V["encoded"]({"body":body,"metadata":{k:v for k,v in meta.items() if k!="requestSha256"}}))
     return body,meta
+
+
+def continue_run(previous_run,path,output,dry_run=False,approval=None,note=None,client=None):
+    body,meta=prepare(path,previous_run=previous_run)
+    require(meta["mode"] in {"edit","extend","upscale"},"continue needs edit, extend or upscale mode")
+    if dry_run:
+        return {**meta,"billableSubmission":False,"approvalRequired":True}
+    return V["submit"](body,meta,output,SimpleNamespace(endpoint=endpoint,parse_response=parse_response),
+                       approval,note,client)
+
+
+def history(directory):
+    """Read the selected branch offline; no global latest-run guessing."""
+    turns=[]
+    seen=set()
+    child=None
+    while directory:
+        root,state=V["read_run"](directory,PROVIDER)
+        require(str(root) not in seen,"Conversation parent cycle detected")
+        seen.add(str(root))
+        if child:
+            require(state.get("interactionId")==child["parentInteractionId"]
+                    and state.get("requestSha256")==child["parentRequestSha256"],
+                    "Conversation parent identity changed")
+        turns.append({"run":str(root),"id":state["id"],"interactionId":state.get("interactionId"),
+                      "requestSha256":state["requestSha256"],"prompt":state.get("prompt"),
+                      "model":state["model"],"status":state["status"],"stored":state.get("stored",True)})
+        child=state.get("conversation",{})
+        directory=child.get("parentRun")
+        if not directory:
+            external_parent=child.get("parentInteractionId") or next(
+                (r["previousInteractionId"] for r in state.get("references",[]) if r.get("previousInteractionId")),None)
+    return {"turns":list(reversed(turns)),"currentRun":turns[0]["run"],
+            "externalParentInteractionId":external_parent,
+            "canContinue":turns[0]["stored"] and bool(turns[0]["interactionId"])
+                and turns[0]["status"] in {"completed","downloaded","completed-with-warnings"}}
 
 
 def endpoint(metadata):

@@ -34,6 +34,8 @@ Read [asset-assembly.md](references/asset-assembly.md) when combining source med
 
 Choose provider generation only when the user explicitly approves its prepared prompt/media, model, mode, count, settings and current estimate. A general video request, available API key or an agent's choice of provider is not approval. Continue independent local work while the paid option is pending. Each additional generation/edit/extension must be covered by explicit approval of that request; uncertain jobs are resumed or investigated, never automatically regenerated.
 
+For conversational Omni changes, retain the selected run directory in project notes and use its Python history/continue commands to preserve prior interaction context. Track the new selected run after each completed revision and import it under a new asset ID. Keep earlier versions available for rollback or deliberate branching; an unresolved turn is recovered before another paid modification. Veo uses its documented sourceRun extension flow rather than Omni conversation IDs.
+
 Use image/footage modes for frozen media; use project-owned custom generators for Three.js, HTML components, layered overlays and audio mixes. A custom generator can combine those scenes and ordinary media in the same timeline. The bundled renderer is a construction example, not a Three.js engine. The composer authors source, scene adapters and per-ratio layout; the producer owns sequencing, source selection and final integration.
 
 ## Maintain one project

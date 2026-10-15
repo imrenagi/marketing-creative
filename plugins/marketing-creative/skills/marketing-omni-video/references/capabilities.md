@@ -11,7 +11,7 @@ Verified 2026-10-15 against the [Omni guide](https://ai.google.dev/gemini-api/do
 | Image/likeness references | mode=reference or references alongside a source; reference tags distinguish appearance from literal frame sources |
 | Video reference | Up to three video_reference clips, each <=3s; likeness/appearance guidance, with their audio ignored; not multi-video narrative reasoning |
 | Uploaded-video editing | mode=edit with one video_source, <=10s; preserve requested content through the prompt |
-| Conversational editing | mode=edit with previousRun/previousInteractionId; each turn generates a new video |
+| Conversational editing | Python continue RUN CONFIG or mode=edit with previousRun/previousInteractionId; inherits omitted parent settings, saves turn links and reads local branch history; each turn generates a new video |
 | Continuation | mode=extend with an uploaded source or stored prior turn; append at the end, with a combined target <=40s |
 | Resolution/upscale | 360p, 720p, 1080p and 4k; higher resolutions are upscaled. mode=upscale requests a 3..10s source at 1080p/4k, preserving duration |
 | Output format | Native 16:9/9:16, 3..10-second requested output, 24 FPS, MP4, inline or URI delivery |

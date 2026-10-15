@@ -24,6 +24,43 @@ Use mode=interpolate for this fragment. Other roles are video_source and video_r
 
 previousRun points to a completed local Omni run and verifies its stored interaction context. Alternatively supply previousInteractionId directly; extension also needs sourceDurationSeconds when it cannot be read from previousRun or a source video's metadata. Never chain from a prior turn created with store=false. Each turn is a separately approved paid request. Download earlier output before provider expiration.
 
+### Continue the selected conversation in Python
+
+When the user requests a change to an existing generated video, find that video's selected run directory in the project/session notes. history RUN reads its local turn chain without a key or network. continue RUN CONFIG chooses its stored interaction ID automatically and sends only the follow-up prompt and any new references. The provider retains prior video context through previous_interaction_id, so do not re-upload or restate the entire scene by default. The commands work across Python processes and later chat sessions as long as the local runs and provider context remain available.
+
+A minimal revision.json needs its own ID, change prompt and a newly checked estimate:
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "desk-warm-light",
+  "prompt": "Change the lighting to warm sunset. Preserve the organizer, camera move and quiet ambience.",
+  "costEstimate": {
+    "usd": 0.6,
+    "source": "https://ai.google.dev/gemini-api/docs/pricing",
+    "checkedAt": "2026-10-15"
+  }
+}
+```
+
+The quote above is illustrative; replace it before approval. Omit previousRun/previousInteractionId when using continue. Mode defaults to edit; extend and upscale are also accepted. Omitted model, aspectRatio and resolution inherit the parent, while edit duration inherits its measured duration when available (otherwise the requested duration). Editing a source longer than ten seconds requires an explicit supported output duration. Extensions default to a five-second continuation; upscale preserves the source duration. Explicit setting changes and extra image/video references remain available through the ordinary config fields. Reference paths resolve relative to this config, not the parent run. store defaults to true so another follow-up remains possible.
+
+```sh
+python3 "$OMNI_TOOL" history /path/to/work/omni-v1
+python3 "$OMNI_TOOL" continue /path/to/work/omni-v1 revision.json --out /path/to/work/omni-v2 --dry-run
+# After approval of this follow-up and its new estimate:
+python3 "$OMNI_TOOL" continue /path/to/work/omni-v1 revision.json --out /path/to/work/omni-v2 --approve-request SHA_FROM_DRY_RUN --approval-note 'User approved this revision in chat'
+python3 "$OMNI_TOOL" status /path/to/work/omni-v2
+python3 "$OMNI_TOOL" download /path/to/work/omni-v2
+python3 "$OMNI_TOOL" history /path/to/work/omni-v2
+# Prepare the next modification against v2, after creating next-revision.json:
+python3 "$OMNI_TOOL" continue /path/to/work/omni-v2 next-revision.json --out /path/to/work/omni-v3 --dry-run
+```
+
+Each child state stores its parent run path, interaction ID and request fingerprint. Parent files stay intact; pointing continue at an earlier run deliberately creates a branch. history reports only the selected branch, its currentRun and local canContinue readiness, not provider availability. Direct previousInteractionId and legacy runs can show an external parent ID without a complete local history. Keep the run chain at its recorded paths, and record the selected child path after each successful edit; do not guess a global latest run across unrelated clips.
+
+Pending/failed/unknown turns cannot become new edit context. Resume their existing status/download commands first; an uncertain call is never automatically repeated, and earlier completed versions remain selectable. If a stored provider interaction expires or was deleted, stop and explain the missing context; using downloaded footage as a new source is a separate approved request and cannot restore the original conversation. Local history outlives server context. See Google's [stateful editing](https://ai.google.dev/gemini-api/docs/omni#stateful-video-editing) and [storage/retention](https://ai.google.dev/gemini-api/docs/interactions-overview#data-storage-and-retention) documentation (checked 2026-10-15).
+
 Extension adds the requested continuation to the expected source duration, bounded at 40 seconds. Review actual returned runtime; a provider may return a continuation rather than a joined file. The producer uses measured footage and correct source offsets, not the requested target alone. Upscale defaults to the measured source duration, requires a 3..10s source and 1080p/4k output, and does not invent higher native detail.
 
 ## Approval and execution

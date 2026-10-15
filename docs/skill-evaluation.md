@@ -64,6 +64,8 @@ Executable image regressions live in tests/test_marketing_images.py and use synt
 | First/last frames and character/style references | Correct explicit source/reference roles; loops reuse their endpoint; unsupported duration/model/control combinations fail locally |
 | Uploaded talking footage requested for voice editing | Omni limitation is identified; narration revision routes to motion-voice, preserving existing footage when appropriate |
 | Submission timeout, interrupted SSE or provider expiry | Preserves identity/received files, queries once, downloads/reuses verified local output; no automatic paid regeneration |
+| Follow-up edits in the same conversation after a restart | Python history/continue selects the intended saved run, chains its interaction ID, inherits omitted settings and preserves each parent; every paid edit has a new approval |
+| Earlier-version branch or unresolved conversational turn | Explicit parent selection controls branching; pending/unknown/stateless turns fail before submission; old outputs remain intact and local history never claims server context is permanent |
 | Three.js scene, HTML overlay, product image and generated b-roll | Producer maintains one timeline/manifest, imports selected source hashes and measured media, routes custom scenes to a project generator; does not claim bundled engine renders arbitrary custom visuals |
 | Native vertical footage requested as square/feed ad | Reframes in separate 1:1/4:5 compositions, reviews focal detail/text/audio in each; a new provider generation still needs approval |
 | Retained soundtrack or mute/mix mismatch | Measured source audio and storyboard hasAudio agree with audioPolicy; actual playback/mix/listening verified before delivery |

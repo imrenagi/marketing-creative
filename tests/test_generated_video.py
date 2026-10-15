@@ -337,6 +337,153 @@ class OmniVideoTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"40s"):
             self.prepare()
 
+    def revision_config(self,**changes):
+        path=self.root/"revision.json"
+        C.save(path,{"schemaVersion":1,"id":"revision","prompt":"Change the light to golden sunset; preserve the subject and camera move.",
+                     "costEstimate":self.config["costEstimate"],**changes})
+        return path
+
+    def test_continue_inherits_settings_and_only_sends_the_followup(self):
+        self.config.update(model="gemini-omni-flash-preview",aspectRatio="9:16",durationSeconds=8,resolution="4k")
+        prior=self.prior()
+        path=self.revision_config()
+        body,meta=OMNI.prepare(path,previous_run=prior)
+        self.assertEqual(body["previous_interaction_id"],"v1_mock123")
+        self.assertEqual(body["model"],"gemini-omni-flash-preview")
+        self.assertEqual(body["response_format"]["aspect_ratio"],"9:16")
+        self.assertEqual(body["response_format"]["duration"],"8s")
+        self.assertEqual(body["response_format"]["resolution"],"4k")
+        self.assertEqual(body["input"],[{"type":"text","text":C.read(path)["prompt"]}])
+        self.assertTrue(body["store"])
+        self.assertEqual(meta["conversation"]["parentRun"],str(prior.resolve()))
+
+    def test_continue_cli_dry_run_and_history_work_without_key_or_writes(self):
+        prior=self.prior()
+        path=self.revision_config()
+        tool=str(SKILLS/"marketing-omni-video/scripts/omni_video.py")
+        env={k:v for k,v in os.environ.items() if k!="GEMINI_API_KEY"}
+        before=(prior/"state.json").read_bytes()
+        command=[sys.executable,tool,"continue",str(prior),str(path),"--out",str(self.root/"next"),"--dry-run"]
+        result=subprocess.run(command,env=env,capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(json.loads(result.stdout)["mode"],"edit")
+        self.assertFalse((self.root/"next").exists())
+        history=subprocess.run([sys.executable,tool,"history",str(prior)],env=env,capture_output=True,text=True)
+        self.assertEqual(history.returncode,0,history.stderr)
+        self.assertTrue(json.loads(history.stdout)["canContinue"])
+        self.assertEqual((prior/"state.json").read_bytes(),before)
+
+    def test_three_turn_conversation_survives_process_restart_and_can_branch(self):
+        prior=self.prior()
+        path=self.revision_config()
+        for previous,name,identity in ((prior,"second","v1_second"),(self.root/"second","third","v1_third"),(prior,"branch","v1_branch")):
+            metadata=OMNI.continue_run(previous,path,self.root/name,dry_run=True)
+            result={**self.completed(),"id":identity}
+            client=FakeClient([result])
+            state=OMNI.continue_run(previous,path,self.root/name,approval=metadata["requestSha256"],note="User approved mock revision",client=client)
+            self.assertEqual(client.calls[0][2]["previous_interaction_id"],C.read(previous/"state.json")["interactionId"])
+            self.assertEqual(state["interactionId"],identity)
+        restarted=module("restarted_omni",SKILLS/"marketing-omni-video/scripts/omni_video.py")
+        history=restarted.history(self.root/"third")
+        self.assertEqual([t["interactionId"] for t in history["turns"]],["v1_mock123","v1_second","v1_third"])
+        self.assertEqual([t["interactionId"] for t in restarted.history(self.root/"branch")["turns"]],["v1_mock123","v1_branch"])
+        self.assertEqual(history["currentRun"],str((self.root/"third").resolve()))
+
+    def test_continue_approval_binds_parent_and_edit_request(self):
+        prior=self.prior()
+        path=self.revision_config()
+        client=FakeClient()
+        with self.assertRaisesRegex(ValueError,"explicit user approval"):
+            OMNI.continue_run(prior,path,self.root/"next",client=client)
+        self.assertFalse(client.calls)
+        self.assertFalse((self.root/"next").exists())
+        metadata=OMNI.continue_run(prior,path,self.root/"next",dry_run=True)
+        self.revision_config(prompt="Change only the background to blue")
+        with self.assertRaisesRegex(ValueError,"explicit user approval"):
+            OMNI.continue_run(prior,path,self.root/"next",approval=metadata["requestSha256"],note="Prior approval",client=client)
+        self.assertFalse(client.calls)
+        path=self.revision_config()
+        parent=C.read(prior/"state.json")
+        C.save(prior/"state.json",{**parent,"interactionId":"v1_different"})
+        with self.assertRaisesRegex(ValueError,"explicit user approval"):
+            OMNI.continue_run(prior,path,self.root/"next",approval=metadata["requestSha256"],note="Prior approval",client=client)
+        self.assertFalse(client.calls)
+
+    def test_continue_rejects_unusable_or_conflicting_context(self):
+        prior=self.prior()
+        state=C.read(prior/"state.json")
+        path=self.revision_config()
+        for changes in ({"status":"in_progress"},{"stored":False},{"interactionId":None}):
+            C.save(prior/"state.json",{**state,**changes})
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                OMNI.continue_run(prior,path,self.root/"next",dry_run=True)
+        C.save(prior/"state.json",state)
+        for changes in ({"previousInteractionId":"v1_other"},{"media":[self.video()]},{"mode":"text"}):
+            self.revision_config(**changes)
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                OMNI.continue_run(prior,path,self.root/"next",dry_run=True)
+        self.assertFalse((self.root/"next").exists())
+
+    def test_unknown_revision_preserves_parent_and_does_not_become_context(self):
+        prior=self.prior()
+        original=(prior/"state.json").read_bytes()
+        path=self.revision_config()
+        meta=OMNI.continue_run(prior,path,self.root/"failed",dry_run=True)
+        with self.assertRaises(TimeoutError):
+            OMNI.continue_run(prior,path,self.root/"failed",approval=meta["requestSha256"],note="Approved mock",client=FakeClient([TimeoutError()]))
+        self.assertEqual((prior/"state.json").read_bytes(),original)
+        history=OMNI.history(self.root/"failed")
+        self.assertEqual(len(history["turns"]),2)
+        self.assertFalse(history["canContinue"])
+        with self.assertRaisesRegex(ValueError,"not completed"):
+            OMNI.continue_run(self.root/"failed",path,self.root/"retry",dry_run=True)
+
+    def test_history_rejects_replaced_parent_and_cycles(self):
+        prior=self.prior()
+        path=self.revision_config()
+        meta=OMNI.continue_run(prior,path,self.root/"second",dry_run=True)
+        OMNI.continue_run(prior,path,self.root/"second",approval=meta["requestSha256"],note="Approved mock",client=FakeClient([{**self.completed(),"id":"v1_second"}]))
+        parent=C.read(prior/"state.json")
+        C.save(prior/"state.json",{**parent,"interactionId":"v1_changed"})
+        with self.assertRaisesRegex(ValueError,"parent identity changed"):
+            OMNI.history(self.root/"second")
+        parent["conversation"]={"parentRun":str(prior),"parentInteractionId":"v1_mock123","parentRequestSha256":parent["requestSha256"]}
+        C.save(prior/"state.json",parent)
+        with self.assertRaisesRegex(ValueError,"cycle"):
+            OMNI.history(prior)
+
+    def test_continue_uses_measured_duration_and_rejects_unbound_asset_metadata(self):
+        prior=self.prior()
+        state=C.read(prior/"state.json")
+        asset={"duration":8,"generation":{"requestSha256":state["requestSha256"]}}
+        C.save(prior/"assets.json",{"assets":[asset]})
+        path=self.revision_config()
+        body,_=OMNI.prepare(path,previous_run=prior)
+        self.assertEqual(body["response_format"]["duration"],"8s")
+        asset["duration"]=15
+        C.save(prior/"assets.json",{"assets":[asset]})
+        with self.assertRaisesRegex(ValueError,"explicitly"):
+            OMNI.prepare(path,previous_run=prior)
+        self.revision_config(durationSeconds=10)
+        body,_=OMNI.prepare(path,previous_run=prior)
+        self.assertEqual(body["response_format"]["duration"],"10s")
+        asset["generation"]["requestSha256"]="unrelated-request"
+        C.save(prior/"assets.json",{"assets":[asset]})
+        with self.assertRaisesRegex(ValueError,"do not match"):
+            OMNI.prepare(path,previous_run=prior)
+
+    def test_history_marks_external_or_legacy_parent_without_inventing_turns(self):
+        self.config.update(mode="edit",previousInteractionId="v1_external")
+        prior=self.prior()
+        history=OMNI.history(prior)
+        self.assertEqual(history["externalParentInteractionId"],"v1_external")
+        self.assertEqual(len(history["turns"]),1)
+        state=C.read(prior/"state.json")
+        state.pop("conversation")
+        state["references"]=[{"kind":"provenance","previousInteractionId":"v1_legacy"}]
+        C.save(prior/"state.json",state)
+        self.assertEqual(OMNI.history(prior)["externalParentInteractionId"],"v1_legacy")
+
     def test_store_false_prevents_chaining_and_retrieval(self):
         self.prior(store=False)
         self.config.update(mode="edit",previousRun="prior")

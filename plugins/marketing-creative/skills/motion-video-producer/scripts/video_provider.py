@@ -446,12 +446,18 @@ def upload(path,output,client=None,dry_run=False):
 def cli(adapter):
     parser=argparse.ArgumentParser(description=adapter.__doc__)
     sub=parser.add_subparsers(dest="command",required=True)
-    p=sub.add_parser("submit")
-    p.add_argument("config")
-    p.add_argument("--out",required=True)
-    p.add_argument("--dry-run",action="store_true")
-    p.add_argument("--approve-request")
-    p.add_argument("--approval-note")
+    commands=("submit","continue") if hasattr(adapter,"continue_run") else ("submit",)
+    for command in commands:
+        p=sub.add_parser(command)
+        if command=="continue":
+            p.add_argument("run")
+        p.add_argument("config")
+        p.add_argument("--out",required=True)
+        p.add_argument("--dry-run",action="store_true")
+        p.add_argument("--approve-request")
+        p.add_argument("--approval-note")
+    if hasattr(adapter,"history"):
+        sub.add_parser("history").add_argument("run")
     for command in ("status","download"):
         sub.add_parser(command).add_argument("run")
     if hasattr(adapter,"cancel"):
@@ -462,7 +468,11 @@ def cli(adapter):
     p.add_argument("--dry-run",action="store_true")
     sub.add_parser("file-status").add_argument("run")
     args=parser.parse_args()
-    if args.command=="submit":
+    if args.command=="continue":
+        result=adapter.continue_run(args.run,args.config,args.out,args.dry_run,args.approve_request,args.approval_note)
+    elif args.command=="history":
+        result=adapter.history(args.run)
+    elif args.command=="submit":
         body,meta=adapter.prepare(args.config)
         if args.dry_run:
             result={**meta,"billableSubmission":False,"approvalRequired":True}
