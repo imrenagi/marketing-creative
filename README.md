@@ -1,6 +1,6 @@
 # Marketing Creative
 
-Eleven agent skills take a campaign from marketing strategy through creative ideas, image assets, exact scripts and animated video production. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
+Twelve agent skills take a campaign from marketing strategy through creative ideas, image assets, exact scripts and animated video production. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
 
 ## Skills and handoffs
 
@@ -10,6 +10,7 @@ Eleven agent skills take a campaign from marketing strategy through creative ide
 | `creative-ideation` | Marketing brief → distinct concepts and selected creative brief |
 | `marketing-image-board` | Brief, concepts and optional references → one board with a chosen tile count/ratio and locally cropped previews |
 | `marketing-image-producer` | Brief or selected concepts/tiles, with optional references → standalone image assets or discounted asynchronous Gemini batches |
+| `marketing-veo-video` | Explicitly approved Veo request → generated marketing video or clip with measured metadata and provenance |
 | `ad-video-director` | Selected idea and brief → exact script, copy, shot direction and production handoff |
 | `motion-video-producer` | Authorized production request → coordinated project and deliverables |
 | `motion-art-director` | Selected concept and brand → visual system, camera and motion language |
@@ -72,7 +73,7 @@ Keep optional credentials outside this repository, in **`~/.config/marketing-cre
 | Credential | Used by | Required when |
 | --- | --- | --- |
 | `ELEVENLABS_API_KEY` | `motion-voice/scripts/voice.py` | Generating narration or a replacement phrase through the ElevenLabs adapter |
-| `GEMINI_API_KEY` | `marketing-image-producer/scripts/gemini_images.py` | Generating an image board, standalone final, or submitting/checking/downloading a Gemini batch |
+| `GEMINI_API_KEY` | Gemini image and Veo helpers | Image generation/batches or explicitly approved Veo generation and job retrieval |
 
 No API key is required for text-only briefs/ideation, scripts, local board splitting, supplied audio/alignment, pause trimming, supplied replacement audio, composition, or local QA. Gemini image generation requires its key and API project access. Other external image/media connectors and HyperFrames manage their own authentication; this package does not currently read `FAL_KEY`, OpenAI keys, or HyperFrames credentials directly.
 
@@ -150,6 +151,23 @@ The board command makes one `generateContent` call for all concepts. More tiles 
 Batch uses the actual asynchronous Gemini Batch API, with automatic inline/JSONL transport. Google currently documents [50% of equivalent standard inference cost and a target turnaround up to 24 hours](https://ai.google.dev/gemini-api/docs/batch-api). Concurrent standard calls do not receive that discount. Board savings depend on resolution and input/output tokens; they are not a guaranteed ninefold reduction. Batch changes cost/latency, while full-resolution regeneration is the quality step.
 
 See the [image workflow](plugins/marketing-creative/skills/marketing-image-producer/references/image-workflow.md), [board guidance](plugins/marketing-creative/skills/marketing-image-board/references/board-workflow.md) and [API source register](plugins/marketing-creative/skills/marketing-image-producer/references/gemini-api.md) for plan fields, errors, output manifests and model/API verification.
+
+### Optional Veo video generation
+
+`marketing-veo-video` is opt-in and requires explicit approval for the exact paid request. General production authorization does not enable it. Prepare a config from the [Veo example](plugins/marketing-creative/skills/marketing-veo-video/assets/veo.example.json), verify current pricing, update its `costEstimate`, and present the prompt/media, model, mode, duration, resolution and estimate before submission.
+
+```sh
+VEO_TOOL="$SUITE/marketing-veo-video/scripts/veo_video.py"
+"$PYTHON" "$VEO_TOOL" submit veo.json --out /path/to/work/veo-v1 --dry-run
+# Only after explicit approval of the current request:
+"$PYTHON" "$VEO_TOOL" submit veo.json --out /path/to/work/veo-v1 --approve-request SHA_FROM_DRY_RUN --approval-note 'User approved this request in chat'
+"$PYTHON" "$VEO_TOOL" status /path/to/work/veo-v1
+"$PYTHON" "$VEO_TOOL" download /path/to/work/veo-v1
+```
+
+Use the same exported `GEMINI_API_KEY` and Python environment described above; FFprobe verifies downloaded media. The helper supports text, image animation, first/last frames, asset references and extension of previous Veo footage, with model-specific constraints. Read the [capability register](plugins/marketing-creative/skills/marketing-veo-video/references/capabilities.md) and [workflow](plugins/marketing-creative/skills/marketing-veo-video/references/workflow.md). A quote is an estimate rather than a billing cap. Changed requests need matching approval; timeouts never trigger automatic paid retries. Status/download reuse saved jobs, and local files retain actual dimensions, duration, FPS, audio and hashes for review.
+
+Provider footage can be a standalone asset or an input to the existing motion-video-producer. Veo natively generates 16:9 or 9:16; final square/portrait-feed delivery is composed and reviewed separately. No live video generation is required for tests or package validation.
 
 The following runs an **original fictional construction example**, not a ready-made ad. Outputs stay outside the repository:
 

@@ -85,7 +85,7 @@ def validate():
     expected_skills = {"marketing-brief", "creative-ideation", "ad-video-director",
                        "motion-video-producer", "motion-art-director", "motion-storyboard",
                        "motion-voice", "motion-composer", "motion-video-qa",
-                       "marketing-image-board", "marketing-image-producer"}
+                       "marketing-image-board", "marketing-image-producer", "marketing-veo-video"}
     require({s.parent.name for s in skills} == expected_skills, "Missing/unexpected suite skills")
     for skill in skills:
         text = skill.read_text(encoding="utf-8")
