@@ -267,6 +267,12 @@ def resolve(root, save=True):
                         require(source_start + end - start <= number(asset.get("duration"), "asset duration", .01) + .001,
                                 "Footage source runs out before beat ends")
                         require(isinstance(visual.get("hasAudio", False), bool), "hasAudio must be boolean")
+                        policy=asset.get("audioPolicy")
+                        if policy=="mute":
+                            require(not visual.get("hasAudio",False),"Footage hasAudio contradicts muted asset audioPolicy")
+                        elif policy in {"retain","mix"}:
+                            require(asset.get("hasAudio") is True and visual.get("hasAudio",False),
+                                    "Retained/mixed footage needs a measured audio stream and hasAudio=true")
                 if visual["mode"] == "counter":
                     number(visual.get("value"), "counter value")
                 if "asset" in visual:

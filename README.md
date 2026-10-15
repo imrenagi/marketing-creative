@@ -13,7 +13,7 @@ Thirteen agent skills take a campaign from marketing strategy through creative i
 | `marketing-veo-video` | Explicitly approved Veo request → generated marketing video or clip with measured metadata and provenance |
 | `marketing-omni-video` | Explicitly approved Omni Flash request → reference-driven video, conversational edit, extension or upscaled clip |
 | `ad-video-director` | Selected idea and brief → exact script, copy, shot direction and production handoff |
-| `motion-video-producer` | Authorized production request → coordinated project and deliverables |
+| `motion-video-producer` | Authorized production request → assembled images, clips, Three.js/HTML scenes and audio in one reviewed project |
 | `motion-art-director` | Selected concept and brand → visual system, camera and motion language |
 | `motion-storyboard` | Script and style → visual beats, semantic cues and per-ratio framing |
 | `motion-voice` | Narration/script → aligned audio, pause trimming and backed-up phrase replacement |
@@ -186,6 +186,20 @@ OMNI_TOOL="$SUITE/marketing-omni-video/scripts/omni_video.py"
 The [Omni capabilities](plugins/marketing-creative/skills/marketing-omni-video/references/capabilities.md) and [workflow](plugins/marketing-creative/skills/marketing-omni-video/references/workflow.md) cover text/image generation, first/last frames, loops, image/video references, uploaded-video edits, previous-interaction edits, tail extensions, upscaled 1080p/4k, inline/URI delivery, background jobs and SSE. Supply local `media` entries or use `file-upload` and `file-status` for larger sources. Explicit media-role bindings distinguish literal first/last frames, appearance references and a source video.
 
 Uploaded edit/extension sources are limited to ten seconds; likeness reference videos to three seconds each. Generated multi-turn extensions can target a combined forty seconds. Standalone audio references and voice editing are unsupported; describe generated sound in the prompt, or use the suite's voice/audio workflow. Stored interactions support later edits; `store=false` disables later retrieval/chaining. Each edit, extension or upscale is a new paid request. The helper preserves received bytes/creation URIs and never automatically regenerates on interruption. Cancellation is available for running background Omni requests when asked, without a refund guarantee.
+
+### Assemble images, clips and authored scenes
+
+`motion-video-producer` remains the orchestrator for the finished video. It chooses/reuses sources, coordinates optional approved generation, registers assets, owns sequencing and timing, then delegates composition and QA. General production authorization keeps Veo/Omni off until their particular paid request is approved.
+
+The [local importer](plugins/marketing-creative/skills/motion-video-producer/scripts/assets.py) copies selected media/resources into a project, verifies generated hashes and metadata, preserves provider/request provenance and backs up the manifest:
+
+```sh
+ASSET_TOOL="$SUITE/motion-video-producer/scripts/assets.py"
+"$PYTHON" "$ASSET_TOOL" /path/to/project --file /path/to/omni-v1/desk-detail-1.mp4 --id opening --provider-manifest /path/to/omni-v1/assets.json --generated-id desk-detail --audio-policy mute --dry-run
+"$PYTHON" "$ASSET_TOOL" /path/to/project --file /path/to/omni-v1/desk-detail-1.mp4 --id opening --provider-manifest /path/to/omni-v1/assets.json --generated-id desk-detail --audio-policy mute
+```
+
+Use actual returned filenames and new asset IDs for revisions. The importer also accepts supplied images, video/audio, and local GLB/HTML/JS/CSS/font resources. Images/footage use their storyboard modes; Three.js scenes, HTML components, layered overlays and audio mixes use a project-owned custom generator in the same timeline. The bundled generator is a construction example and does not render arbitrary Three.js scenes. Read [asset assembly](plugins/marketing-creative/skills/motion-video-producer/references/asset-assembly.md) for source windows, sound policy, custom runtime adapters, four-ratio framing and final verification. Imports remain unreviewed until actual inspection; changing the manifest invalidates older timing/build/export fingerprints.
 
 The following runs an **original fictional construction example**, not a ready-made ad. Outputs stay outside the repository:
 

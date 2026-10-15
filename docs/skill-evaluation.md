@@ -53,3 +53,20 @@ Executable regressions live in tests/test_production.py. Browser/framework smoke
 | No key or live provider validation | Dry-run and splitting work without credentials; reports that offline validation does not establish real model quality/access |
 
 Executable image regressions live in tests/test_marketing_images.py and use synthetic pixels and mocked API responses. Independent forward-testing exercised the requested board → selection → batch → recovery path offline. Live marketing-image quality requires an authorized provider run and visual review.
+
+## Optional generated video and assembly
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Produce an ad without provider approval | Producer uses supplied/local sources; Veo/Omni remain off; optional generation plan does not launch a paid call |
+| User asks to explore Veo or Omni | Prepares exact prompt/media, model/mode/settings and current estimate; dry-run needs no key/network; asks for approval before paid generation |
+| Approved request subsequently changes | Changed content/settings/reference/quote invalidates the approval fingerprint; no silent reuse or model fallback |
+| First/last frames and character/style references | Correct explicit source/reference roles; loops reuse their endpoint; unsupported duration/model/control combinations fail locally |
+| Uploaded talking footage requested for voice editing | Omni limitation is identified; narration revision routes to motion-voice, preserving existing footage when appropriate |
+| Submission timeout, interrupted SSE or provider expiry | Preserves identity/received files, queries once, downloads/reuses verified local output; no automatic paid regeneration |
+| Three.js scene, HTML overlay, product image and generated b-roll | Producer maintains one timeline/manifest, imports selected source hashes and measured media, routes custom scenes to a project generator; does not claim bundled engine renders arbitrary custom visuals |
+| Native vertical footage requested as square/feed ad | Reframes in separate 1:1/4:5 compositions, reviews focal detail/text/audio in each; a new provider generation still needs approval |
+| Retained soundtrack or mute/mix mismatch | Measured source audio and storyboard hasAudio agree with audioPolicy; actual playback/mix/listening verified before delivery |
+| Imported unreviewed or changed source | Changed hashes fail; provider findings and pending review remain visible; imports invalidate timing/build/export fingerprints |
+
+tests/test_generated_video.py uses fake providers, synthetic media and actual local FFprobe checks. tests/test_asset_assembly.py covers immutable imports, provenance, source hashes, backups, audio policy, all four ordinary-media compositions and custom-generator resource contracts. Contract fixtures do not establish actual Three.js rendering or live generated-video quality.

@@ -13,6 +13,8 @@ All JSON documents carry `schemaVersion: 1`. Use UTF-8. The production helpers u
 | script.json | Ordered segments: `{id,text}`; empty array for silent work |
 | storyboard.json | Ordered `beats`, optional `variants` object replacing beats for specific variant IDs |
 | assets/manifest.json | `assets`: `{id,path,kind,source,sha256,width?,height?}`; paths are project-relative |
+| assets/imported/<asset-id>/ | Frozen imported media or scene resource, with its metadata/provenance in the asset manifest |
+| assets/backups/<id>/manifest.json | Manifest backup before a new imported asset is registered |
 | audio/alignment.json | Audio hash, measured duration and aligned words |
 | timing.resolved.json | Derived absolute timing and fingerprints of all inputs/assets |
 | build.mjs or installed generator | Editable composition source |
@@ -22,6 +24,8 @@ All JSON documents carry `schemaVersion: 1`. Use UTF-8. The production helpers u
 | renders/<variant-id>.mp4 | Final encoded output, only after rendering |
 
 A project's custom generator can replace the bundled construction example. Keep its path/revision in production notes. Do not treat changing the example's text as a complete production design.
+
+Imported assets additionally record measured duration/FPS/audio when applicable, reviewed/reviewNote, optional provider reviewIssues and generation/provenance fingerprints. kind can be image, video, audio or resource; custom resources are not image/footage visuals by themselves. audioPolicy is mute/retain/mix and must be implemented by the composer. See [asset assembly](asset-assembly.md) for imports and mixed Three.js/HTML/media projects.
 
 ## Project configuration
 

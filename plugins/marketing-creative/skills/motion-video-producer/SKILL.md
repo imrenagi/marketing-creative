@@ -1,11 +1,13 @@
 ---
 name: motion-video-producer
-description: Produce or revise an animated marketing video or explainer from a brief or selected concept, coordinating art direction, storyboard, narration, composition, QA, and requested export ratios.
+description: Orchestrate marketing videos and explainers from images, footage, approved generated clips, Three.js scenes, HTML components and audio, coordinating timing, composition, QA and requested export ratios.
 ---
 
 # Motion Video Producer
 
 Own the authorized deliverable and project state. Resume from existing artifacts before asking questions. For an inspection, edit, render or status request, perform that operation without restarting the full workflow.
+
+Own the mixed-media timeline and final exports. Provider video skills create source assets or standalone clips; they do not replace this orchestrator, its script/timing decisions or its final QA. Use supplied/local assets and deterministic composition by default. Veo and Omni are optional, explicitly approved additions because they cost more.
 
 ## Route the missing work
 
@@ -14,6 +16,10 @@ Own the authorized deliverable and project state. Resume from existing artifacts
 | Campaign strategy or audience/offer decisions | [marketing-brief](../marketing-brief/SKILL.md) |
 | Distinct creative ideas or a selected creative brief | [creative-ideation](../creative-ideation/SKILL.md) |
 | Exact ad script and production direction | [ad-video-director](../ad-video-director/SKILL.md) |
+| Contact-sheet image exploration | [marketing-image-board](../marketing-image-board/SKILL.md) |
+| Selected standalone/generated images | [marketing-image-producer](../marketing-image-producer/SKILL.md) |
+| User-approved Veo asset/reference/interpolation/extension | [marketing-veo-video](../marketing-veo-video/SKILL.md) |
+| User-approved Omni generation/conversational editing/extension | [marketing-omni-video](../marketing-omni-video/SKILL.md) |
 | Visual identity, style and motion language | [motion-art-director](../motion-art-director/SKILL.md) |
 | Visual beats and semantic timing cues | [motion-storyboard](../motion-storyboard/SKILL.md) |
 | Narration, alignment and audio revision | [motion-voice](../motion-voice/SKILL.md) |
@@ -21,6 +27,14 @@ Own the authorized deliverable and project state. Resume from existing artifacts
 | Production checks, frame review and delivery validation | [motion-video-qa](../motion-video-qa/SKILL.md) |
 
 A general explainer can bypass ad strategy. A supplied script/concept can enter downstream. Silent work skips voice. Music can drive timing when that is the request. Stage selection does not authorize subagents or require separate chats.
+
+## Resolve and combine assets
+
+Read [asset-assembly.md](references/asset-assembly.md) when combining source media or custom scenes. Plan each beat's asset source, evidence status, framing, source offset and sound policy. Use the [asset importer](scripts/assets.py) to copy supplied/generated images, clips, audio and local scene resources into the project, validate hashes/metadata, retain generation provenance and back up its manifest. Importing does not mark an asset reviewed or update the storyboard automatically.
+
+Choose provider generation only when the user explicitly approves its prepared prompt/media, model, mode, count, settings and current estimate. A general video request, available API key or an agent's choice of provider is not approval. Continue independent local work while the paid option is pending. Each additional generation/edit/extension must be covered by explicit approval of that request; uncertain jobs are resumed or investigated, never automatically regenerated.
+
+Use image/footage modes for frozen media; use project-owned custom generators for Three.js, HTML components, layered overlays and audio mixes. A custom generator can combine those scenes and ordinary media in the same timeline. The bundled renderer is a construction example, not a Three.js engine. The composer authors source, scene adapters and per-ratio layout; the producer owns sequencing, source selection and final integration.
 
 ## Maintain one project
 

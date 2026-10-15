@@ -7,6 +7,8 @@ description: Build or revise a seekable HyperFrames video composition from a sto
 
 Read the approved/supplied briefs, script, style, storyboard, asset manifest and placement profiles. Read [runtime.md](references/runtime.md) before writing composition HTML. HyperFrames owns timeline seeking, timed clip visibility, media playback and rendering. Load its current installed domain skills when available.
 
+The producer owns source selection and assembly. Read its [asset assembly](../motion-video-producer/references/asset-assembly.md) for imported footage/image provenance, source windows and sound policy. Combine reviewed frozen media with local Three.js scenes and HTML components through a project-owned custom generator when needed. Paid Veo/Omni requests remain explicitly approved upstream; a missing visual never authorizes a provider fallback.
+
 ## Build from intent and resolved timing
 
 Validate/resolve the project using the [project tool](../motion-video-producer/scripts/project.py). Keep semantic cues in the storyboard and absolute seconds in generated timing. Build with a generator; output HTML can be rebuilt, but preserve and reconcile any user/Studio edits before regeneration.

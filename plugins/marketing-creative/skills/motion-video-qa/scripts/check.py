@@ -72,6 +72,11 @@ def check(root, exports=False, record_export=None):
     P.require(P.read(root / "timing.resolved.json") == expected, "Stale resolved timing; run resolve")
     project, _, _, manifest, _ = P.load(root)
     warnings, variants = [], []
+    for asset in manifest.get("assets",[]):
+        if asset.get("reviewed") is False:
+            warnings.append(f"Asset {asset['id']}: imported/generated source review pending")
+        for issue in asset.get("reviewIssues",[]):
+            warnings.append(f"Asset {asset['id']}: provider finding: {issue}")
     variant_ids = {v["id"] for v in expected["variants"]}
     P.require(record_export is None or record_export in variant_ids, "Unknown export variant")
     for variant in expected["variants"]:

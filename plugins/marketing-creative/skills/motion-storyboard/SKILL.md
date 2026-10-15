@@ -15,6 +15,8 @@ Use word anchors when aligned narration exists, seconds for deliberate silent ti
 
 Plan one visual response to each meaningful information change, not one scene per sentence. Keep enough time for comprehension. Intentional empty space or silence is allowed; mark an intentionally blank visual beat explicitly. Do not force real-screen assets into conceptual/illustrated explainers or add counters unsupported by the script.
 
+For mixed-media beats, identify supplied/generated image or footage, authored HTML component or Three.js scene, plus stable asset IDs, measured source window and mute/retain/mix policy. Mark proposed paid generation as pending explicit approval; do not assume it exists. Use measured results and review extension joins before final timing. Request/import assets through motion-video-producer rather than having the storyboard silently invoke providers.
+
 ## Plan adaptations
 
 For every required ratio, record subject framing, text zones, captions, crop and interaction focus. Use per-variant beat overrides when needed. If the same copy is unreadable, shorten the overlay or change layout while preserving claims and exact mandated copy. A different duration/argument needs a separate cutdown, not distorted timing.

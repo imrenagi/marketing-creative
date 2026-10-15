@@ -46,6 +46,13 @@ successful outputs and recovery state. Do not automatically resubmit uncertain
 paid operations. Use synthetic fixtures and mocked providers for routine tests;
 live provider calls require authorization within the user's task scope.
 
+Keep marketing-veo-video and marketing-omni-video explicitly opt-in. The user
+requires approval of their prepared paid requests, including provider/model,
+prompt/media, settings and current estimate; general production permission
+does not enable them. Preserve their invocation policy and approval fingerprint
+checks. motion-video-producer owns mixed-media assembly and final QA, with
+project-local custom generators for Three.js/HTML scenes when needed.
+
 ## Credentials and generated files
 
 Credentials belong in `~/.config/marketing-creative/.env` or a secret manager.
