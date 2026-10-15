@@ -183,6 +183,10 @@ The deterministic ZIP includes only manifests, skill instructions/references, ap
 
 [Behavioral evaluation scenarios](docs/skill-evaluation.md) complement executable tests. Package checks do not establish installation, model behavior, rendered quality or advertising performance. Machine QA explicitly distinguishes source checks from browser inspection, framework checks, listening and actual exports.
 
+## Repository workflow
+
+See [AGENTS.md](AGENTS.md) for contributor guidance, validation, credential handling and incremental commits using the commit skill.
+
 ## Attribution
 
 Visual direction is adapted from [Bang Motion](https://github.com/bangtutorial/bang-motion); timing/revision/verification ideas from [Hyperframe Pro](https://github.com/buildwithhanif/hyperframe-pro). Their MIT notices are retained in third-party/. See the [adaptation register](plugins/marketing-creative/skills/motion-video-producer/references/sources.md). Upstream gallery media and private sample assets are not bundled.
