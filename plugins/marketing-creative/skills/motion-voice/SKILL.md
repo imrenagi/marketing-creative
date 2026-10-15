@@ -25,4 +25,4 @@ The tool updates script text, alignment, word IDs, duration and audio hash toget
 
 ## Handoff
 
-Run timing resolution again, rebuild, inspect/listen to joins and neighboring beats, then verify all outputs. Use the available HyperFrames audio skill for placed-track mixing, ducking, fades and effects. Audio editing here is source preparation, not a second media playback engine.
+Run timing resolution again, rebuild, inspect/listen to joins and neighboring beats, then verify all outputs. Use hyperframes-audio for placed-track mixing, voiceover carve, ducking, fades, FX/automation and shared buses; follow its presets/diagnosis guidance and listen to the finished relationship. media-use can supply authorized music/SFX or transcription; embedded-captions can turn suitable talking-head alignment into captions. The [capability map](../motion-video-producer/references/hyperframes-routing.md) preserves source/provider ownership. Audio editing here is source preparation, not a second media playback engine.

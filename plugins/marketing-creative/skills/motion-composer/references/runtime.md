@@ -1,8 +1,10 @@
 # Runtime and dependencies
 
-HyperFrames is the default external rendering runtime, not bundled in this plugin. Use Node 20+, Python 3.9+, FFmpeg/FFprobe for audio/export checks; Playwright is optional for the browser probe. Planning and stdlib project checks need no API key or paid service.
+HyperFrames is the default external rendering runtime, not bundled in this plugin. The bundled composer uses Node 20+; the external CLI has its own version-dependent requirements (the HyperFrames snapshot reviewed on 2026-10-15 requires Node 22+). Use Python 3.9+ and FFmpeg/FFprobe for stdlib project/audio/export checks; image/video-provider helpers require Python 3.10+. Playwright is optional for the browser probe. Planning and stdlib project checks need no API key or paid service.
 
 Before a HyperFrames build, read its installed entry/core/domain guidance when available. Check installed CLI help/version and use a project-compatible pinned version; do not guess current flags. Respect its usage/availability checks when actually creating/rendering. If unavailable, complete source preparation and report runtime/render validation as pending.
+
+The [capability map](../../motion-video-producer/references/hyperframes-routing.md) routes all reviewed upstream skills by need, with source links and integration boundaries. Prefer those targeted domains over importing a second complete workflow for every task.
 
 When handing off to a HyperFrames end-to-end workflow, read its installed brief-format/brief-contract references. Populate its BRIEF.md from the already established marketing/creative briefs, script, style, placements and authorization; do not run another intake interview. Treat that file as a derived runtime handoff and preserve an existing project's workflow and user decisions. Each independently rendered canvas gets its matching aspect/duration. Keep the suite's primary artifacts authoritative and reconcile framework/Studio edits before regenerating.
 

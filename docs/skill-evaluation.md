@@ -72,3 +72,12 @@ Executable image regressions live in tests/test_marketing_images.py and use synt
 | Imported unreviewed or changed source | Changed hashes fail; provider findings and pending review remain visible; imports invalidate timing/build/export fingerprints |
 
 tests/test_generated_video.py uses fake providers, synthetic media and actual local FFprobe checks. tests/test_asset_assembly.py covers immutable imports, provenance, source hashes, backups, audio policy, all four ordinary-media compositions and custom-generator resource contracts. Contract fixtures do not establish actual Three.js rendering or live generated-video quality.
+
+## Optional HyperFrames capabilities
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Named effect, 3D product scene or mascot in a selected concept | Relevant registry/animation adapter is read before implementation; compatible generator preserves seekable playback, selected brand, stable timing and dependency hashes |
+| Existing briefs handed to a specialized runtime workflow | Derives the upstream handoff without repeating strategy; preserves all four requested ratios, source evidence and paid-provider approval rules |
+| Sound, media polish or revision review needs improvement | Routes to the matching audio/media/keyframe/CLI domain; actual frame/listening evidence establishes quality, not loading a skill |
+| Reference checkout exists but required tool is unavailable | Uses accessible guidance, completes independent work and identifies missing execution/verification; does not claim installation, render success or send public feedback |

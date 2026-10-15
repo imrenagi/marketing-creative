@@ -65,7 +65,13 @@ For clients without plugin support, reference the complete skill tree from the c
 
 ## Production tools
 
-Planning needs no renderer, account, API key or paid service. Project validation uses Python 3.9+; composition uses Node 20+. HyperFrames is the external default preview/render runtime. FFmpeg/FFprobe are needed for audio conversion and encoded-file checks. Playwright plus a Chromium browser is optional for the visual probe. ElevenLabs is one optional TTS adapter; supplied audio/alignment works without it.
+Planning needs no renderer, account, API key or paid service. Project validation uses Python 3.9+; the bundled composer uses Node 20+. The external HyperFrames CLI has separate version requirements (Node 22+ in the reference snapshot reviewed on 2026-10-15). HyperFrames is the external default preview/render runtime. FFmpeg/FFprobe are needed for audio conversion and encoded-file checks. Playwright plus a Chromium browser is optional for the visual probe. ElevenLabs is one optional TTS adapter; supplied audio/alignment works without it.
+
+### Use HyperFrames skills where they help
+
+The [HyperFrames capability map](plugins/marketing-creative/skills/motion-video-producer/references/hyperframes-routing.md) reviews all **21 published upstream skills** and routes them into our workflow. Art direction can use creative composition guidance and registry discovery; composition can use animation/Three.js/Lottie adapters and keyframe diagnostics; finishing can use source-aware media treatments, placed-track audio tools and visual regression checks. Product captures, talking-head overlays, captions, music-led promos and Figma imports are conditional workflows.
+
+`motion-video-producer` remains the orchestrator. Use the relevant installed skills or an available reference checkout, then check actual runtime/dependency availability. This plugin does not bundle or automatically install the upstream tools. Existing briefs, selected concepts, four-ratio requirements and paid-generation approval boundaries remain authoritative; only load capabilities the current stage needs. The map includes inspected source links, useful first reads and handoff limitations.
 
 ### API keys and local configuration
 

@@ -28,6 +28,8 @@ Own the mixed-media timeline and final exports. Provider video skills create sou
 
 A general explainer can bypass ad strategy. A supplied script/concept can enter downstream. Silent work skips voice. Music can drive timing when that is the request. Stage selection does not authorize subagents or require separate chats.
 
+Use the [HyperFrames capability map](references/hyperframes-routing.md) to load relevant installed domains at the stage that needs them. It reviews all 21 upstream skills, including optional product captures, captions/overlays, music-led promos, Figma imports and motion assets. Keep ownership here and derive any runtime handoff from existing briefs; external workflows do not restart strategy, change required ratios or authorize paid providers.
+
 ## Resolve and combine assets
 
 Read [asset-assembly.md](references/asset-assembly.md) when combining source media or custom scenes. Plan each beat's asset source, evidence status, framing, source offset and sound policy. Use the [asset importer](scripts/assets.py) to copy supplied/generated images, clips, audio and local scene resources into the project, validate hashes/metadata, retain generation provenance and back up its manifest. Importing does not mark an asset reviewed or update the storyboard automatically.

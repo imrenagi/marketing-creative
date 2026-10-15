@@ -21,6 +21,8 @@ Technical failures block delivery of affected outputs. Unexpected blank frames r
 
 Generated screenshots are evidence only after they are reviewed. Capture does not set review status. Record visual/audio review notes per variant, remaining limitations and exact commands actually run in `qa/review.md`. Do not mark missing framework/media/export validation as passed.
 
+Use the [HyperFrames capability map](../motion-video-producer/references/hyperframes-routing.md) for deeper checks where relevant: CLI snapshots/compare for revisions, keyframes shot/ghost evidence for camera or canvas motion, animation-map for choreography, creative design-adherence for brand and audio guidance for the actual mix. Inspect mounted-scene midpoints and nonzero audit coverage. Read studio/history guidance when reconciling user edits; technical diagnostics still require frame inspection and listening.
+
 For generated footage/images, inspect provider reviewIssues, measured media, request/provenance hashes and actual review notes. Check extension joins and source windows, intended sound against audioPolicy/hasAudio, and final typography/product claims rather than accepting model-rendered copy. Review custom Three.js/HTML scenes at repeat seeks within the same mixed-media timeline. Unreviewed imported assets and provider success alone cannot establish delivery readiness.
 
 ## Revisions

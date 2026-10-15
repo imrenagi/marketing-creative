@@ -17,6 +17,8 @@ Plan one visual response to each meaningful information change, not one scene pe
 
 For mixed-media beats, identify supplied/generated image or footage, authored HTML component or Three.js scene, plus stable asset IDs, measured source window and mute/retain/mix policy. Mark proposed paid generation as pending explicit approval; do not assume it exists. Use measured results and review extension joins before final timing. Request/import assets through motion-video-producer rather than having the storyboard silently invoke providers.
 
+Use hyperframes-creative's beat-direction and storyboard-recipe when a visual review board helps; sample posed frames from the assembled composition so the board tests actual layout. Use hyperframes-animation/registry for concrete motion choices, music-to-video only when the track drives pacing, and talking-head-recut/embedded-captions for matching footage treatments. Read the [capability map](../motion-video-producer/references/hyperframes-routing.md); translate upstream formats into this project's stable beats and cues, keeping storyboard proof separate from image concept boards.
+
 ## Plan adaptations
 
 For every required ratio, record subject framing, text zones, captions, crop and interaction focus. Use per-variant beat overrides when needed. If the same copy is unreadable, shorten the overlay or change layout while preserving claims and exact mandated copy. A different duration/argument needs a separate cutdown, not distorted timing.

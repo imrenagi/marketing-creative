@@ -15,6 +15,8 @@ Write `STYLE.md`: desired feeling; palette with source/reason for each color; di
 
 The [concept library](references/concepts.md) is shared with ideation. Its examples are construction principles, not mandatory scene orders. Keep the user's requested style; a starter's placeholder colors or previous project's palette are not brand evidence.
 
+For a nontrivial HyperFrames treatment, use hyperframes-creative's house-style, video-composition and typography guidance, then hyperframes-animation for the chosen motion language. Search hyperframes-registry before hand-building a named effect or scene primitive; use media-use for source-aware photographic polish and frozen assets. The [capability map](../motion-video-producer/references/hyperframes-routing.md) explains availability and boundaries; preserve the selected brand and intentional stillness.
+
 ## Compose for meaning
 
 Keep a clear focal point. Move the camera to follow, reveal or compare; object action may carry a shot with a stationary camera. Continuous worlds, character stages, purposeful cuts, designed stillness and photo collage are all valid. Do not force perpetual movement, a fixed scene count or photoreal imagery.
