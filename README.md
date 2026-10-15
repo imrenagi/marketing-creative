@@ -256,6 +256,20 @@ The deterministic ZIP includes only manifests, skill instructions/references, ap
 
 See [AGENTS.md](AGENTS.md) for contributor guidance, validation, credential handling and incremental commits using the commit skill.
 
+### Automated releases
+
+The public release line starts at `v0.1.0`. Every push to `main` with new commits runs offline Python and Node tests and package validation before semantic-release publishes a GitHub release. Pull requests run validation only. Both jobs use `runs-on: [self-hosted, linux]`; the repository must have access to an online runner with those labels, Git, Python setup support and Node setup support. FFmpeg enables the optional local media-conversion regression.
+
+Commit messages determine the highest version bump since the last tag: `feat: ...` produces a minor release, `feat!: ...` or a `BREAKING CHANGE:` footer produces a major release, and all other changes produce a patch release, including skill documentation and ordinary commit messages. A rerun without new commits creates no release. Keep using conventional commits so the generated release notes identify changes clearly, including skill documentation.
+
+Releases synchronize both client manifests and the private release-tooling package/lockfile, update `CHANGELOG.md`, and commit those files with `[skip ci]` before tagging. This keeps marketplace installations from Git and the attached `marketing-creative-plugin.zip` at the same version. The ZIP contains the complete allowlisted skill tree and notices, built outside the repository. Nothing is published to npm.
+
+The workflow uses GitHub's automatic `GITHUB_TOKEN` with `contents: write`; no npm token or manually configured release secret is required. If branch rules later prevent release commits or tags, allow an appropriate GitHub App to perform those actions before expecting releases to succeed. Release runs are serialized and in-progress runs are not cancelled. The workflow also supports manual dispatch to retry a failed run; inspect any existing tag/release first if publication was interrupted.
+
+For local release-tooling checks, use Node 24.15+ and run `npm ci` then `npm test`. An authenticated `npm run release -- --dry-run --no-ci` previews the next version and notes, but skips version updates, ZIP preparation, commits, tags and publication. Do not run the real release command locally; push to `main` to use the validated workflow.
+
+Configuration follows the official [semantic-release GitHub Actions recipe](https://semantic-release.org/recipes/ci-configurations/github-actions/), [commit analyzer rules](https://github.com/semantic-release/commit-analyzer#release-rules) and [Git release-asset plugin](https://github.com/semantic-release/git), reviewed on 2026-10-15. Node requirements were also checked against the pinned npm packages' engine metadata.
+
 ## Attribution
 
 Visual direction is adapted from [Bang Motion](https://github.com/bangtutorial/bang-motion); timing/revision/verification ideas from [Hyperframe Pro](https://github.com/buildwithhanif/hyperframe-pro). Their MIT notices are retained in third-party/. See the [adaptation register](plugins/marketing-creative/skills/motion-video-producer/references/sources.md). Upstream gallery media and private sample assets are not bundled.

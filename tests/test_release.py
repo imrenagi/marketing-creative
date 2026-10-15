@@ -1,0 +1,58 @@
+import json
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from prepare_release import VERSION_FILES, update_versions
+
+
+class ReleaseTests(unittest.TestCase):
+    def test_versions_and_archive_match_without_changing_dependencies(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repo"
+            root.mkdir()
+            for name in ("scripts", "plugins", ".agents", ".claude-plugin"):
+                shutil.copytree(ROOT / name, root / name,
+                                ignore=shutil.ignore_patterns("__pycache__"))
+            for name in ("package.json", "package-lock.json"):
+                shutil.copy2(ROOT / name, root / name)
+            original_lock = json.loads((root / "package-lock.json").read_text())
+            archive = Path(directory) / "release.zip"
+            subprocess.run([sys.executable, str(root / "scripts/prepare_release.py"),
+                            "0.2.3", "--output", str(archive)], check=True,
+                           capture_output=True, text=True)
+            for name in VERSION_FILES:
+                self.assertEqual(json.loads((root / name).read_text())["version"], "0.2.3")
+            lock = json.loads((root / "package-lock.json").read_text())
+            self.assertEqual(lock["packages"][""]["version"], "0.2.3")
+            self.assertEqual({k: v for k, v in lock["packages"].items() if k},
+                             {k: v for k, v in original_lock["packages"].items() if k})
+            with zipfile.ZipFile(archive) as package:
+                for client in (".codex-plugin", ".claude-plugin"):
+                    self.assertEqual(json.loads(package.read(f"{client}/plugin.json"))["version"],
+                                     "0.2.3")
+                self.assertIn("skills/marketing-brief/SKILL.md", package.namelist())
+                self.assertFalse(any("node_modules" in name for name in package.namelist()))
+
+    def test_invalid_version_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for version in ("v0.1.0", "01.2.3", "1.2.3-beta.1", "1.2.3; touch bad"):
+                with self.subTest(version=version), self.assertRaises(ValueError):
+                    update_versions(Path(directory), version)
+            self.assertEqual(list(Path(directory).iterdir()), [])
+
+    def test_missing_metadata_does_not_partially_update(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / "package.json"
+            package.write_text('{"version":"0.1.0"}')
+            before = package.read_bytes()
+            with self.assertRaises(FileNotFoundError):
+                update_versions(root, "0.2.0")
+            self.assertEqual(package.read_bytes(), before)

@@ -1,13 +1,18 @@
-name: Validate skill package
+name: Validate and release skills
 on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: skills-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   package:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -15,8 +20,37 @@ jobs:
           python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - run: python3 -m pip install -r plugins/marketing-creative/skills/marketing-image-producer/scripts/requirements.txt
-      - run: python3 -m unittest discover -s tests -v
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Run offline regressions in an isolated Python environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/marketing-creative-venv"
+          "$RUNNER_TEMP/marketing-creative-venv/bin/python" -m pip install -r plugins/marketing-creative/skills/marketing-image-producer/scripts/requirements.txt
+          "$RUNNER_TEMP/marketing-creative-venv/bin/python" -m unittest discover -s tests -v
       - run: python3 scripts/validate_package.py
-      - run: python3 scripts/build_plugin.py --output /tmp/marketing-creative-plugin.zip
+      - run: python3 scripts/build_plugin.py --output "$RUNNER_TEMP/marketing-creative-validation.zip"
+  release:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: package
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Publish versioned skill plugin and release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
