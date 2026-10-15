@@ -33,7 +33,7 @@ codex plugin marketplace add /absolute/path/to/marketing-creative
 codex plugin add marketing-creative@marketing-creative
 ```
 
-Or register imrenagi/marketing-creative after the relevant release is published. Reload the client if needed. Invoke $marketing-brief, $creative-ideation, or any skill in the table.
+Or register imrenagicom/marketing-creative after the relevant release is published. Reload the client if needed. Invoke $marketing-brief, $creative-ideation, or any skill in the table.
 
 ### Claude Code
 
