@@ -50,6 +50,85 @@ def convert(source, dest):
                    check=True, capture_output=True)
 
 
+def loudness_settings(args):
+    values = {"integrated": args.target_lufs, "truePeak": args.true_peak, "range": args.lra}
+    for name, low, high in (("integrated", -70, -5), ("truePeak", -9, 0), ("range", 1, 50)):
+        value = values[name]
+        P.require(math.isfinite(value) and low <= value <= high, f"Loudness {name} must be {low}..{high}")
+    return values
+
+
+def loudnorm_run(source, options, output=None, rate=44100):
+    command = ["ffmpeg", "-hide_banner", "-nostdin", "-v", "info", "-y", "-i", str(source),
+               "-af", "loudnorm=" + options + ":print_format=json"]
+    command += (["-ar", str(rate), "-ac", "1", "-c:a", "pcm_s16le", str(output)] if output
+                else ["-f", "null", "-"])
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+    except FileNotFoundError:
+        raise ValueError("FFmpeg is required for loudness normalization") from None
+    except subprocess.CalledProcessError:
+        raise ValueError("FFmpeg loudness processing failed; original take is preserved") from None
+    match = re.search(r'\{\s*"input_i"[\s\S]*?\}', result.stderr)
+    P.require(match, "FFmpeg returned no loudness measurements")
+    return json.loads(match[0])
+
+
+def normalize_take(data, rate, settings):
+    """Measure, normalize, and verify PCM without changing the sample clock."""
+    options = f"I={settings['integrated']}:TP={settings['truePeak']}:LRA={settings['range']}"
+    with tempfile.TemporaryDirectory(prefix="motion-loudness-") as temp:
+        source, dest = Path(temp) / "source.wav", Path(temp) / "normalized.wav"
+        pcm_write(source, data, rate)
+        measured = loudnorm_run(source, options)
+        fields = {"measured_I": "input_i", "measured_TP": "input_tp", "measured_LRA": "input_lra",
+                  "measured_thresh": "input_thresh", "offset": "target_offset"}
+        for key in fields.values():
+            P.require(math.isfinite(float(measured[key])),
+                      "Audio has no measurable loudness; use a longer audible take or skip normalization")
+        second = options + ":linear=true:" + ":".join(f"{name}={measured[key]}" for name, key in fields.items())
+        processed = loudnorm_run(source, second, dest, rate)
+        out, out_rate = pcm_read(dest)
+        P.require(out_rate == rate and len(out) == len(data),
+                  "Normalization changed PCM frame count/rate; original take is preserved")
+        verified = loudnorm_run(dest, options)
+        actual = {"integrated": float(verified["input_i"]), "truePeak": float(verified["input_tp"]),
+                  "range": float(verified["input_lra"])}
+        P.require(all(math.isfinite(v) for v in actual.values()), "Normalized loudness is not measurable")
+        P.require(abs(actual["integrated"] - settings["integrated"]) <= .5
+                  and actual["truePeak"] <= settings["truePeak"] + .2,
+                  f"Normalized loudness missed target: {actual}; original take is preserved")
+    return out, {"targets": settings, "measured": actual, "mode": processed["normalization_type"]}
+
+
+def pause_policy(words, cap, config=None):
+    """Resolve explicit before-phrase classes to inter-word gaps in the current take."""
+    classes, rules = {"default": cap}, []
+    if config is not None:
+        P.require(isinstance(config, dict) and config.get("schemaVersion") == 1,
+                  "Unsupported pause configuration schema")
+        P.require(set(config) <= {"schemaVersion", "classes", "rules"}, "Unknown pause configuration field")
+        classes, rules = config.get("classes"), config.get("rules", [])
+        P.require(isinstance(classes, dict) and "default" in classes, "Pause classes require default")
+        P.require(isinstance(rules, list), "Pause rules must be an array")
+    for name, value in classes.items():
+        P.identifier(name)
+        if value is not None:
+            P.number(value, f"pause class {name}", .05)
+    overrides = {}
+    for rule in rules:
+        P.require(isinstance(rule, dict) and set(rule) == {"before", "class"}, "Pause rule requires before and class")
+        name, cue = rule["class"], rule["before"]
+        P.require(isinstance(name, str) and name in classes, f"Unknown pause class {name}")
+        P.require(isinstance(cue, dict) and {"segment", "quote"} <= set(cue)
+                  and set(cue) <= {"segment", "quote", "occurrence"}, "Pause before cue requires segment/quote")
+        lo, _ = P.phrase_span(words, cue["segment"], cue["quote"], cue.get("occurrence"))
+        P.require(lo > 0, "No inter-word pause before the first word")
+        P.require(lo not in overrides, "Conflicting pause rules for the same gap")
+        overrides[lo] = name
+    return [(overrides.get(i, "default"), classes[overrides.get(i, "default")]) for i in range(1, len(words))]
+
+
 def ramp(data, joins, rate):
     n = max(1, round(rate * .006))
     for join in joins:
@@ -59,7 +138,7 @@ def ramp(data, joins, rate):
             data[join + k] = round(data[join + k] * k / n)
 
 
-def commit(root, data, rate, alignment, script, project):
+def commit(root, data, rate, alignment, script, project, loudness=None):
     root = Path(root).resolve()
     for name in ("audio/vo.wav", "audio/alignment.json", "audio/backups", "script.json", "project.json", "timing.resolved.json", "qa/report.json"):
         P.safe_output(root, name)
@@ -75,6 +154,10 @@ def commit(root, data, rate, alignment, script, project):
         (staged / "audio").mkdir()
         pcm_write(staged / "audio/vo.wav", data, rate)
         alignment["audioSha256"] = P.digest(staged / "audio/vo.wav")
+        if loudness is not None:
+            alignment["loudness"] = {**loudness, "audioSha256": alignment["audioSha256"]}
+        elif alignment.get("loudness", {}).get("audioSha256") != alignment["audioSha256"]:
+            alignment.pop("loudness", None)
         P.write(staged / "audio/alignment.json", alignment)
         P.write(staged / "script.json", script)
         P.write(staged / "project.json", project)
@@ -208,7 +291,7 @@ def replace_script(script, words, lo, hi, text):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    for command in ("import", "generate", "trim", "replace"):
+    for command in ("import", "generate", "normalize", "trim", "replace"):
         command_parser = sub.add_parser(command)
         command_parser.add_argument("project")
         command_parser.add_argument("--dry-run", action="store_true")
@@ -217,8 +300,15 @@ def main():
             command_parser.add_argument("--alignment", required=True)
         if command == "generate":
             command_parser.add_argument("--config", required=True)
+        if command in ("generate", "import", "normalize"):
+            command_parser.add_argument("--target-lufs", type=float, default=-16)
+            command_parser.add_argument("--true-peak", type=float, default=-1.5)
+            command_parser.add_argument("--lra", type=float, default=9)
+        if command in ("generate", "import"):
+            command_parser.add_argument("--normalize", action=argparse.BooleanOptionalAction, default=command == "generate")
         if command == "trim":
             command_parser.add_argument("--cap", type=float, default=.24)
+            command_parser.add_argument("--pause-config")
             command_parser.add_argument("--max-boundary-peak", type=float, default=.1)
         if command == "replace":
             command_parser.add_argument("--segment", required=True)
@@ -231,6 +321,7 @@ def main():
     args = parser.parse_args()
     root = Path(args.project).resolve()
     project, script = P.read(root / "project.json"), P.read(root / "script.json")
+    settings = loudness_settings(args) if args.command in ("generate", "import", "normalize") else None
     if args.command in ("import", "generate"):
         if args.command == "generate":
             P.require(not project.get("voice"), "Existing take: use replacement/import instead of paid full overwrite")
@@ -240,8 +331,11 @@ def main():
                 P.require(key in config, f"Missing {key}")
             if args.dry_run:
                 dry_summary(args, script)
+                print("Voice configuration: " + json.dumps({k: config[k] for k in ("voiceId", "modelId", "language", "voiceSettings", "seed") if k in config}))
+                print("Loudness: " + (json.dumps(settings) if args.normalize else "preserve source level"))
                 print("Dry run: no API call or writes")
                 return
+            P.require(shutil.which("ffmpeg"), "FFmpeg is required before generating paid narration")
         with tempfile.TemporaryDirectory() as temp:
             if args.command == "generate":
                 data, rate, alignment = provider_take(script["segments"], config, temp)
@@ -255,30 +349,54 @@ def main():
                     alignment.update({"schemaVersion": 1, "duration": len(data) / rate, "audioSha256": P.digest(Path(temp) / "take.wav")})
                     P.write(Path(temp) / "alignment.json", alignment)
                     P.validate_alignment(temp, candidate, script)
+                    print("Loudness: " + (json.dumps(settings) if args.normalize else "preserve source level"))
                     print("Dry run: import valid; no project writes")
                     return
-            commit(root, data, rate, alignment, script, project)
+            report = None
+            if args.normalize:
+                if args.command == "generate":
+                    # Preserve a successful paid take before optional local processing.
+                    commit(root, data, rate, alignment, script, project)
+                    project = P.read(root / "project.json")
+                    print("Raw generated take saved; if normalization fails, use normalize, never regenerate")
+                data, report = normalize_take(data, rate, settings)
+                print("Loudness: " + json.dumps(report))
+            commit(root, data, rate, alignment, script, project, report)
         return
     alignment = P.validate_alignment(root, project, script)
     P.require(alignment, "No aligned take")
     words = alignment["words"]
     data, rate = pcm_read(P.local(root, project["voice"]["audio"]))
+    if args.command == "normalize":
+        print("Loudness targets: " + json.dumps(settings))
+        if args.dry_run:
+            print("Dry run: no processing or project writes; measurements not performed")
+            return
+        out, report = normalize_take(data, rate, settings)
+        print("Loudness: " + json.dumps(report))
+        commit(root, out, rate, alignment, script, project, report)
+        return
     if args.command == "trim":
-        P.number(args.cap, "pause cap", .05)
+        policy = pause_policy(words, args.cap, P.read(args.pause_config) if args.pause_config else None)
         P.require(0 <= args.max_boundary_peak <= 1, "Boundary peak fraction must be 0..1")
         cuts = []
         peak = max((abs(x) for x in data), default=0) or 1
         window = round(.015 * rate)
-        for left, right in zip(words, words[1:]):
-            if right["start"] - left["end"] <= args.cap:
+        for (left, right), (name, cap) in zip(zip(words, words[1:]), policy):
+            gap = right["start"] - left["end"]
+            if cap is None:
+                print(f"Preserve {gap:.4f}s before {right['id']} ({name})")
                 continue
-            start = round((left["end"] + args.cap / 2) * rate)
-            end = round((right["start"] - args.cap / 2) * rate)
+            if gap <= cap:
+                continue
+            start = round((left["end"] + cap / 2) * rate)
+            end = round((right["start"] - cap / 2) * rate)
             boundary = max(abs(x) for x in data[max(0, start - window):min(len(data), start + window)])
             boundary = max(boundary, max(abs(x) for x in data[max(0, end - window):min(len(data), end + window)]))
             P.require(boundary / peak <= args.max_boundary_peak, "Trim boundary contains signal; inspect alignment before cutting")
             if end > start:
                 cuts.append((start, end))
+                print(f"Trim before {right['id']} ({name}): keep {cap:.4f}s, remove {(end-start)/rate:.4f}s")
         print(f"Would remove {sum(b-a for a,b in cuts)/rate:.4f}s in {len(cuts)} pauses")
         if args.dry_run or not cuts:
             return

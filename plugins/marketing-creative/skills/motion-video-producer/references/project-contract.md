@@ -43,6 +43,8 @@ Script: `{"schemaVersion":1,"segments":[{"id":"promise","text":"Finish one usefu
 
 Alignment: `{"schemaVersion":1,"audioSha256":"<hash>","duration":4.2,"words":[{"id":"w0","segment":"promise","text":"Finish","start":0.2,"end":0.5},...]}`.
 
+Optional alignment.loudness records targets, measured integrated/truePeak/range, actual normalization mode and the audioSha256 measured. It describes the mono source, not the final mix. Voice mutations remove it when the PCM hash changes unless the operation supplies fresh measurements. Cue-based pause policies are separate project-owned JSON files; see [loudness and pauses](../../motion-voice/references/loudness-and-pauses.md).
+
 All script segment text must match the corresponding ordered alignment text after Unicode normalization, punctuation and spacing removal. Words have nonoverlapping positive durations within the measured WAV. Word timing can be imported from any provider if converted to this shape; keep the original response outside the distributable package. Han characters are preserved, and phrase matching supports providers that tokenize them differently. Latin cues require complete token boundaries.
 
 ## Storyboard

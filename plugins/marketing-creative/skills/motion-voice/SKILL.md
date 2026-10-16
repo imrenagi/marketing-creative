@@ -1,6 +1,6 @@
 ---
 name: motion-voice
-description: Generate or import narration with word alignment, trim pauses, or replace a spoken phrase while preserving and retiming the existing take. Use for voice timing and audio revisions.
+description: Generate or import aligned narration, normalize loudness, trim pauses by cue-based classes, or replace a phrase while preserving and retiming the take. Use for voice preparation and audio revisions.
 ---
 
 # Motion Voice
@@ -15,13 +15,19 @@ For supplied recording + alignment, normalize the audio to mono 16-bit PCM WAV, 
 
 For TTS, supply voice/model/language/settings explicitly in `voice-config.json`. Run the dry-run first to show text and configuration without spending. Generate only within authorized scope. Stop after an API error and report the actionable failure; do not repeatedly spend quota. Do not overwrite an existing take silently.
 
+New generated narration defaults to measured two-pass loudness normalization at −16 LUFS, −1.5 dBTP and LRA 9; these are configurable starting targets, not placement requirements. Use --no-normalize to preserve the generated level. Imports preserve source level unless --normalize is requested. Read [loudness-and-pauses.md](references/loudness-and-pauses.md) for controls and measurement limits. A generated raw take is saved before normalization; recover local finishing errors with normalize rather than another paid generation.
+
 ## Revise safely
 
 Trim only inter-word silence supported by alignment, preserving a configurable pause; do not speed up approved narration to fit a duration. Listen at joins. A splice is sample-exact arithmetic, not proof of inaudibility.
 
+Use --pause-config when ordinary pauses, step introductions or deliberate holds need different treatment. Resolve each class at an explicit before-phrase cue; null preserves that gap. Do not infer numbered steps from a particular language or trim dramatic pauses just to meet a target. Dry-run lists the class and measured removal for candidate cuts; missing/ambiguous or conflicting rules fail before mutation.
+
 Replacement dry-run must show the exact matched span and surrounding context. Repeated text needs an occurrence. The tool accepts a supplied replacement WAV/alignment so provider choice stays open; optional ElevenLabs generation passes preceding/following context. Preserve the original take and metadata in a unique backup before any overwrite. Level-match carefully and apply short amplitude ramps without consuming samples.
 
 The tool updates script text, alignment, word IDs, duration and audio hash together. It invalidates resolved timing, compositions and QA. Re-cue deleted words and update captions/visual copy; downstream timing cannot repair a changed claim automatically. Boundary and speech-overlap checks must pass before mutation.
+
+Normalize after final trimming/replacement when consistent take loudness is needed. Normalization preserves PCM frame count and word times, records measured results against the audio hash and backs up the original. Subsequent PCM edits discard stale loudness measurements. Listen to the source and finished mix; source normalization does not establish final stereo/export loudness.
 
 ## Handoff
 

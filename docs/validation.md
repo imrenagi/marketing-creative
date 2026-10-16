@@ -118,3 +118,11 @@ The new scenarios and illustrative copy were reviewed as guidance, not executed 
 Validated on 2026-10-16: strengthened motion-storyboard with job/hero/action choices, per-ratio zones, cue-driven handoffs and editorial review gates, retaining intentional silence and evidence-aware stylization. The changed entry point passed skill-creator structural validation; package inventory/resource links (90 files) and diff checks passed. Hyperframe Pro attribution and distributed MIT notice are retained.
 
 This increment changes guidance only; code regressions were not repeated. Added behavioral scenarios are an evaluation plan, not completed independent model evaluations. No visual, listening, renderer, paid-provider or retention checks were performed.
+
+## Narration loudness and pause classes
+
+Validated on 2026-10-16 with Python 3.12, Pillow, Node and FFmpeg 8.1: all 128 offline Python regressions passed without skips. Twelve new audio regressions cover measured loudness/true peak, unchanged PCM clock/words, original backups and invalidated timing, silent/invalid/mismatched-clock rejection, no-processing/no-write dry-runs, preserved raw paid results after local failure, optional import/generation normalization, exact mixed-class trimming, preserved dramatic gaps, invalid/conflicting/Unicode/repeated anchors and stale measurement removal. Generated narration is mocked; measured audio tests use synthetic PCM and actual local FFmpeg.
+
+motion-voice passed skill-creator structural validation; package/resource links (91 files) and diff checks passed. Loudnorm parameters and fallback behavior were checked against official FFmpeg filter documentation on the same date; the portable reference records the source. No TTS API/model/pricing change was made. New generation normalizes by default and retains a raw backup; imported recordings preserve level by default.
+
+No paid provider requests, human listening, real-speech prosody evaluation, HyperFrames preview/render or finished stereo-mix review was performed. The numeric results establish local synthetic-source processing and state integrity, not audible seam quality or final export loudness. Behavioral scenarios remain an evaluation plan. Unchanged Node release tests were not repeated for this audio increment.

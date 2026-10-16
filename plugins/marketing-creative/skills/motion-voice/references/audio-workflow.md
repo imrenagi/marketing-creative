@@ -12,9 +12,17 @@ Run `python3 <this-skill>/scripts/voice.py --help` for commands. All paths suppl
 
 The provider default is not baked into the skill; select an available model/voice intentionally. Other services can generate audio/alignment for import without using this adapter.
 
+Generated narration is normalized by default; --no-normalize keeps its original level. Imports require --normalize to change level. The raw successful generated take is committed locally before finishing, so a local FFmpeg/measurement failure can be recovered with normalize without another paid call. Dry-run prints selected voice configuration and finishing targets without requiring credentials, FFmpeg or a provider request.
+
 ## Pause trimming
 
 `voice.py trim PROJECT --cap 0.24 --dry-run`; run without dry-run after inspecting candidate cuts. Only aligned inter-word gaps larger than cap are removed, preserving half the cap each side. Check peak amplitude around each proposed boundary; the tool refuses boundaries above a configurable fraction of the take's peak. No new recording. Six-millisecond ramps change amplitudes in place and consume no samples. All timestamps derive from integer PCM frame positions.
+
+Use --pause-config pause-policy.json for cue-based classes, including preserved gaps. Its classes.default replaces --cap as the fallback; rules select other classes before exact script phrases. See [loudness-and-pauses.md](loudness-and-pauses.md) for the schema and examples.
+
+## Loudness normalization
+
+`voice.py normalize PROJECT --target-lufs -16 --true-peak -1.5 --lra 9 --dry-run` previews targets without processing/writes. Omit dry-run for local measured normalization. The helper uses two-pass FFmpeg loudnorm plus a verification measurement of the resulting PCM, preserves sample count/rate and word timestamps, backs up the original take and invalidates timing/build/QA. It rejects unmeasurable audio, changed clocks and out-of-tolerance results before replacing the original. Consult [loudness-and-pauses.md](loudness-and-pauses.md) for limits and verified filter documentation.
 
 ## Replace a phrase
 

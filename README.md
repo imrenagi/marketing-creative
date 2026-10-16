@@ -18,13 +18,15 @@ Two independently installable plugins cover campaign planning, copywriting and c
 | `motion-video-producer` | Authorized production request → assembled images, clips, Three.js/HTML scenes and audio in one reviewed project |
 | `motion-art-director` | Selected concept and brand → visual system, camera and motion language |
 | `motion-storyboard` | Script and style → visual beats, semantic cues and per-ratio framing |
-| `motion-voice` | Narration/script → aligned audio, pause trimming and backed-up phrase replacement |
+| `motion-voice` | Narration/script → aligned audio, measured loudness, cue-based pause classes and backed-up phrase replacement |
 | `motion-composer` | Resolved storyboard → seekable HyperFrames compositions in requested ratios |
 | `motion-video-qa` | Source/build/export → integrity checks, frame review and encoded-file verification |
 
 Use only the stages needed. Supplied briefs, selected ideas and recordings enter downstream; small revisions do not restart intake. Planning alone does not launch campaigns or render a video. A general explainer can bypass advertising strategy. Existing ad-video-director invocations continue to work, with strategy and ideation routed to their new owners when needed.
 
 `motion-storyboard` develops each beat from its job to its hero visual, visible action, framing/zones and cue-driven handoff before composition. Its [beat-planning reference](plugins/marketing-creative/skills/motion-storyboard/references/beat-planning.md) includes concrete visual choices and editorial review gates. Those gates complement executable timing/visibility checks; they do not claim to predict retention.
+
+`motion-voice` normalizes newly generated narration to configurable working targets (default −16 LUFS / −1.5 dBTP / LRA 9), with --no-normalize available. Imports preserve source level unless --normalize is requested. Existing takes use the local normalize command. Cue-based pause classes let ordinary/step pauses use different caps and null preserve dramatic gaps. See [loudness and pause controls](plugins/marketing-creative/skills/motion-voice/references/loudness-and-pauses.md); these mono-source targets do not certify the finished mix.
 
 ## Install
 

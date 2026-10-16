@@ -133,3 +133,16 @@ These scenarios are a manual behavioral evaluation plan. Structural validation a
 | Passing timing resolver but unreadable hero | Reports editorial review unresolved and routes to composition/QA; does not equate structural coverage with visual quality |
 
 These scenarios describe expected decisions, not completed independent model evaluations.
+
+## Narration finishing
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| New TTS and an approved supplied recording | New generation previews/uses configurable loudness targets; supplied audio preserves its level unless normalization is requested |
+| Existing take needs consistent loudness | Uses local normalize with a no-write dry-run; preserves sample clock/words, backs up the take and records measured mono-source results separately from final-mix review |
+| Local normalization fails after successful paid generation | Keeps the saved raw take and recovers local processing; does not submit paid TTS again |
+| Multilingual script with a step introduction and dramatic reveal | Resolves explicit before-phrase pause classes, keeps the longer step cap and preserves the dramatic gap; does not use language-specific number heuristics |
+| Phrase removed or repeated after a revision | Missing/ambiguous/conflicting pause rules stop before mutation; fixes anchors or supplies occurrence before trimming |
+| Trim or replacement after a measured take | Removes stale source-loudness metadata, retimes actual frames and re-normalizes only when requested/needed for finishing |
+
+Executable regressions use synthetic PCM, local FFmpeg and mocked narration generation; no paid provider quality or listening review is implied.
