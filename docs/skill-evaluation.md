@@ -95,6 +95,22 @@ tests/test_generated_video.py uses fake providers, synthetic media and actual lo
 | User requests Meta macros or app install attribution | Verifies official provider integration requirements and labels unresolved templates; does not treat encoded macros or static website UTMs as verified install tracking |
 | Analytics inaccessible or consent checks unperformed | Distinguishes local URL validity from live collection, records pending checks and owner, and makes no performance claim |
 | User wants files they can commit | Records remain in the product workspace with text plans/registries and no secrets; no implicit Git commit, push or campaign publication |
-| Marketing Performance installed alone | Both skills have portable local references, brief generation needs no creative tools, and the extracted helper runs without Marketing Creative |
+| Marketing Performance installed alone | All three skills have portable local references, brief generation and copywriting need no creative tools, and the extracted helper runs without Marketing Creative |
 
 These are behavioral evaluation scenarios, not claims of completed model evaluation. Executable URL/export regressions use fictional plans and temporary directories; no live analytics or ad accounts are needed.
+
+## Marketing copywriting
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Supplied brief, selected concept and two requested ad variants | Writes exact requested fields without repeating intake or changing the concept; stable variant IDs identify a meaningful persuasion difference and its hypothesis |
+| Improve one headline in an approved landing page | Returns a focused revision, preserves offer and surrounding approved text, and flags any conflicting destination promise |
+| Draft claims seven-day fluency and a free trial with no supporting evidence | Removes unsupported promises from usable copy, supplies a supported alternative and records the missing evidence separately |
+| Matching ad and landing-page hero with a paid signup destination | Keeps the promise and CTA consistent; does not imply a demo, download or trial that the destination does not provide |
+| Existing brand examples and Indonesian localization | Uses the requested register and idiomatic wording, retains product names and offer conditions, and preserves the original claim strength and variant IDs |
+| Request copy for a placement whose limits are unspecified | Verifies relevant current official requirements or labels limits unverified; does not invent a universal limit or claim upload readiness |
+| Email sequence with no recipient data or trigger specification | Produces draft copy with explicit proposed triggers/personalization and sensible fallbacks; invents no prior contact or user behavior and sends nothing |
+| Variant requested as a guaranteed winner based only on editorial judgment | Gives a reasoned recommendation and test hypothesis, makes no measured performance claim, and preserves the campaign's primary outcome metric |
+| User asks for a full timed video script and shot list | Routes or supplies a portable handoff to ad-video-director when available; ordinary ad text remains usable without the Creative plugin |
+
+These scenarios are a manual behavioral evaluation plan. Structural validation and archive regressions establish distribution integrity, not copy quality, native-language review, platform acceptance or campaign performance.

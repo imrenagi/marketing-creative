@@ -94,3 +94,13 @@ No live campaign, redirects, analytics receipt, conversion attribution, global i
 ## Campaign Manager rename
 
 Validated on 2026-10-16: renamed the skill folder, frontmatter, UI name and invocation to `campaign-manager`; updated README links, the brief handoff, package inventory and archive/helper regression paths. All 116 offline Python regressions passed without skips, including standalone extracted-archive execution. Both changed skill entry points passed structural validation; package/resource checks, a Performance archive build, Claude Performance/marketplace validation and diff checks passed. This rename did not change URL generation or measurement behavior; no live attribution checks were performed.
+
+## Marketing copywriter
+
+Validated on 2026-10-16:
+
+- Added `marketing-copywriter` to Marketing Performance with normal automatic discovery, channel-specific guidance for ads/social, landing pages, email and localization, and portable handoffs to the plugin's existing brief and campaign skills. Video scripting remains an optional Creative handoff.
+- All 116 offline Python regressions passed in a Python 3.12 virtual environment with Pillow and no skips. Updated the expected skill inventory and release regression to verify that the copywriter entry point, UI metadata and reference ship only in the Performance archive. All 10 Node release checks passed.
+- The new entry point passed skill-creator structural validation. Both Claude plugin manifests and the marketplace passed CLI validation. Repository resource/link validation passed for 88 files: 73 Creative and 15 Performance. Two Performance archives built outside the repository were byte-identical; extraction confirmed the copywriter resources and sibling handoff targets. A Creative archive also built successfully. Diff checks passed.
+
+The added behavioral scenarios are an evaluation plan, not completed independent model evaluations. No live copy campaign, platform acceptance, native-language review, global plugin installation, paid generation, rendering or listening review was performed. These checks establish structural and distribution integrity rather than advertising performance or copy quality.

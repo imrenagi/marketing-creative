@@ -1,7 +1,7 @@
 {
   "name": "marketing-performance",
   "version": "0.2.1",
-  "description": "Marketing briefs, campaign operations and documented UTM planning in the current workspace.",
+  "description": "Marketing briefs, copywriting, campaign operations and documented UTM planning in the current workspace.",
   "author": {
     "name": "Imre Nagi"
   },
@@ -11,6 +11,7 @@
     "campaigns",
     "utm",
     "analytics",
-    "marketing-operations"
+    "marketing-operations",
+    "copywriting"
   ]
 }

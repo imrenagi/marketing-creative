@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marketing Copywriter"
+  short_description: "Write and refine evidence-backed marketing copy"
+  default_prompt: "Use $marketing-copywriter to write channel-ready copy from my brief or improve an existing draft."

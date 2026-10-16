@@ -4,7 +4,7 @@
     "name": "Imre Nagi"
   },
   "metadata": {
-    "description": "Campaign planning and UTM operations alongside creative image and video production"
+    "description": "Campaign planning, copywriting and UTM operations alongside creative image and video production"
   },
   "plugins": [
     {
@@ -15,7 +15,7 @@
     {
       "name": "marketing-performance",
       "source": "./plugins/marketing-performance",
-      "description": "Marketing briefs and campaign operations with documented UTM links"
+      "description": "Marketing briefs, channel-ready copy and campaign operations with documented UTM links"
     }
   ]
 }

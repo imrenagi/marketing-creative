@@ -1,6 +1,6 @@
 # Marketing Creative and Performance
 
-Two independently installable plugins cover campaign planning and creative production. Marketing Performance owns `marketing-brief` and `campaign-manager`; Marketing Creative owns twelve skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
+Two independently installable plugins cover campaign planning, copywriting and creative production. Marketing Performance owns `marketing-brief`, `marketing-copywriter` and `campaign-manager`; Marketing Creative owns twelve skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
 
 ## Skills and handoffs
 
@@ -8,6 +8,7 @@ Two independently installable plugins cover campaign planning and creative produ
 | --- | --- |
 | `campaign-manager` (marketing-performance) | Product campaign → shared UTM conventions, tagged links and versioned workspace records |
 | `marketing-brief` (marketing-performance) | Product facts, research and goal → strategic brief, evidence, placement requirements |
+| `marketing-copywriter` (marketing-performance) | Brief or draft → exact ad, landing-page, email or social copy, variants and localization |
 | `creative-ideation` | Marketing brief → distinct concepts and selected creative brief |
 | `marketing-image-board` | Brief, concepts and optional references → one board with a chosen tile count/ratio and locally cropped previews |
 | `marketing-image-producer` | Brief or selected concepts/tiles, with optional references → standalone image assets or discounted asynchronous Gemini batches |
@@ -51,6 +52,8 @@ For clients without plugin support, reference the complete skill tree from the c
 
 > Use $marketing-brief for our task app. Goal: users completing their first assignment. Audience: small design teams. We have real captures but no verified trial offer. Plan Meta feed, Reels, landscape and square deliverables.
 
+> Use $marketing-copywriter with this brief to draft ad copy and a matching landing-page hero in English and Indonesian. Give me two variants that test different benefit emphases, keep the supplied offer and destination, and flag unsupported claims.
+
 > Use $creative-ideation with this marketing brief. Give me three distinct directions, explain the evidence each needs, and recommend one.
 
 > Use $ad-video-director to turn the selected demonstration concept into a 20-second Indonesian script. Preserve the brief's objective, offer and destination.
@@ -64,6 +67,10 @@ For clients without plugin support, reference the complete skill tree from the c
 > Use $marketing-image-board with this brief and any attached references. Choose a useful number of concepts and a portrait or landscape sheet layout. Ensure each concept can be cropped separately.
 
 > Use $marketing-image-producer to regenerate my three selected tiles as separate 4K assets through Gemini's discounted Batch API. Keep the original source image as the product reference.
+
+## Marketing copy
+
+Use `$marketing-copywriter` (Claude: `/marketing-performance:marketing-copywriter`) for exact wording or revisions from an existing brief or draft. It adapts copy by channel, preserves supported claims and offer terms, and provides meaningful test variants or localization when requested. Copy is returned in chat unless saving is part of the task. Full timed video scripts and shot direction remain with `ad-video-director`; drafting copy does not publish a campaign or send email.
 
 ## Campaign records and UTMs
 
