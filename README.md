@@ -8,7 +8,7 @@ Two independently installable plugins cover campaign planning, copywriting and c
 | --- | --- |
 | `campaign-manager` (marketing-performance) | Product campaign → shared UTM conventions, tagged links and versioned workspace records |
 | `marketing-brief` (marketing-performance) | Product facts, research and goal → strategic brief, evidence, placement requirements |
-| `marketing-copywriter` (marketing-performance) | Brief or draft → exact ad, landing-page, email or social copy, variants and localization |
+| `marketing-copywriter` (marketing-performance) | Brief or draft → exact ad, landing-page, email or social copy, voice/style variants and localization |
 | `creative-ideation` | Marketing brief → distinct concepts and selected creative brief |
 | `marketing-image-board` | Brief, concepts and optional references → one board with a chosen tile count/ratio and locally cropped previews |
 | `marketing-image-producer` | Brief or selected concepts/tiles, with optional references → standalone image assets or discounted asynchronous Gemini batches |
@@ -70,7 +70,9 @@ For clients without plugin support, reference the complete skill tree from the c
 
 ## Marketing copy
 
-Use `$marketing-copywriter` (Claude: `/marketing-performance:marketing-copywriter`) for exact wording or revisions from an existing brief or draft. It adapts copy by channel, preserves supported claims and offer terms, and provides meaningful test variants or localization when requested. Copy is returned in chat unless saving is part of the task. Full timed video scripts and shot direction remain with `ad-video-director`; drafting copy does not publish a campaign or send email.
+Use `$marketing-copywriter` (Claude: `/marketing-performance:marketing-copywriter`) for exact wording or revisions from an existing brief or draft. It can prepare multiple complete versions with different voices, tones, styles and selling intensity: personal experience sharing, a friendly useful-find recommendation, a warm explanation or a direct sales pitch. Firsthand stories use the actual speaker's supplied experiences; warm copy can also work from product facts alone. It preserves supported claims and offer terms, and provides meaningful test variants or localization when requested. Copy is returned in chat unless saving is part of the task. Full timed video scripts and shot direction remain with `ad-video-director`; drafting copy does not publish a campaign or send email.
+
+> Use $marketing-copywriter to turn these product facts and my experience notes into four complete Instagram captions: candid personal story, friend-to-friend recommendation, playful explanation and direct selling. Keep the same facts and destination, make the voices distinct, and avoid adding experiences I did not provide.
 
 ## Campaign records and UTMs
 

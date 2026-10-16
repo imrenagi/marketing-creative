@@ -45,7 +45,8 @@ class ReleaseTests(unittest.TestCase):
             with zipfile.ZipFile(Path(directory) / "marketing-performance-plugin.zip") as package:
                 self.assertIn("skills/marketing-brief/SKILL.md", package.namelist())
                 self.assertIn("skills/campaign-manager/scripts/build_utm.py", package.namelist())
-                for resource in ("SKILL.md", "agents/openai.yaml", "references/channel-copy.md"):
+                for resource in ("SKILL.md", "agents/openai.yaml", "references/channel-copy.md",
+                                 "references/voice-and-style.md"):
                     self.assertIn(f"skills/marketing-copywriter/{resource}", package.namelist())
                 self.assertNotIn("skills/creative-ideation/SKILL.md", package.namelist())
                 for client in (".codex-plugin", ".claude-plugin"):

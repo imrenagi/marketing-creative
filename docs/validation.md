@@ -104,3 +104,11 @@ Validated on 2026-10-16:
 - The new entry point passed skill-creator structural validation. Both Claude plugin manifests and the marketplace passed CLI validation. Repository resource/link validation passed for 88 files: 73 Creative and 15 Performance. Two Performance archives built outside the repository were byte-identical; extraction confirmed the copywriter resources and sibling handoff targets. A Creative archive also built successfully. Diff checks passed.
 
 The added behavioral scenarios are an evaluation plan, not completed independent model evaluations. No live copy campaign, platform acceptance, native-language review, global plugin installation, paid generation, rendering or listening review was performed. These checks establish structural and distribution integrity rather than advertising performance or copy quality.
+
+## Copywriter voice and style exploration
+
+Validated on 2026-10-16: expanded the copywriter to produce multiple complete versions with distinct speakers, tones, structures, intended feels and selling intensity. Added a portable reference with personal experience, useful-find, practical, playful and direct-selling approaches, plus fictional examples sharing the same facts. Firsthand narration uses supplied speaker experiences; personal sharing can use a gentle or absent purchase ask when the brief permits. Updated discovery text, usage examples and behavioral scenarios.
+
+All 116 offline Python regressions passed with Pillow and no skips. Skill-creator structural validation, package/resource-link checks, Claude Performance/marketplace validation and diff checks passed. Two 16-file Performance archives were byte-identical; extraction verified the new reference and sibling handoff resources. The release regression now checks that the voice/style reference ships, and the three release regressions passed again after incorporating the automated v0.3.0 metadata. The package inventory contains 89 files across both plugins.
+
+The new scenarios and illustrative copy were reviewed as guidance, not executed as independent model evaluations. No live campaign, audience testing, native-language review, global installation or paid production was performed. Unchanged Node release-tooling checks were not repeated for this guidance update; their prior results remain recorded above.

@@ -112,5 +112,11 @@ These are behavioral evaluation scenarios, not claims of completed model evaluat
 | Email sequence with no recipient data or trigger specification | Produces draft copy with explicit proposed triggers/personalization and sensible fallbacks; invents no prior contact or user behavior and sends nothing |
 | Variant requested as a guaranteed winner based only on editorial judgment | Gives a reasoned recommendation and test hypothesis, makes no measured performance claim, and preserves the campaign's primary outcome metric |
 | User asks for a full timed video script and shot list | Routes or supplies a portable handoff to ad-video-director when available; ordinary ad text remains usable without the Creative plugin |
+| Four complete posts requested in candid, friendly, playful and direct-selling styles | Supplies four complete, labeled versions with distinct perspective, rhythm, structure and endings; preserves facts, offer, language and requested destination rather than merely changing adjectives |
+| Personal recommendation from supplied experience notes | Ghostwrites in the actual speaker's voice, retains concrete observations and their scale, and avoids adding unreported use, emotions or results |
+| Product facts only, with a request to sound like someone who used it | Uses a warm factual alternative or asks for the essential anecdote; first-person templates stay provisional and no invented use is presented as a finished testimonial |
+| Founder or sponsored creator wants a friendly recommendation | Keeps their actual relationship and supplied disclosures visible; does not portray them as an independent customer |
+| Personal sharing with no purchase ask, followed by direct-selling version | Allows reflection or a gentle recommendation in the sharing version when the brief permits; sales version makes supported value and action explicit without inventing scarcity or terms |
+| Keep version B's story but make the ending more direct | Revises the chosen version and requested dimension, preserves the anecdote and other versions, and does not restart campaign intake |
 
 These scenarios are a manual behavioral evaluation plan. Structural validation and archive regressions establish distribution integrity, not copy quality, native-language review, platform acceptance or campaign performance.
