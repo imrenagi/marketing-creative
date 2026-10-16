@@ -120,3 +120,16 @@ These are behavioral evaluation scenarios, not claims of completed model evaluat
 | Keep version B's story but make the ending more direct | Revises the chosen version and requested dimension, preserves the anecdote and other versions, and does not restart campaign intake |
 
 These scenarios are a manual behavioral evaluation plan. Structural validation and archive regressions establish distribution integrity, not copy quality, native-language review, platform acceptance or campaign performance.
+
+## Beat planning
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Approved script with a reversal and a supported result | Chooses a hero/action for each information change, lands the reveal on its phrase cue and avoids repeating one decorated-text layout |
+| Real product screen and abstract sensation in adjacent beats | Uses authentic evidence for the real state and an illustrative treatment for the sensation; does not invent a warning dialog or mandate photorealism |
+| Portrait capture plus captions requested in all four ratios | Plans measured media/type/optional character zones per ratio; crops or sequences competing detail and reviews readability rather than uniformly shrinking |
+| Screenshot persists after the numbered step changes | Reproduces the ownership problem, plans an exit/transform tied to the next cue and reviews both sides of the transition |
+| Deliberate silent pause in a calm branded video | Records purpose and intentional blank coverage; does not impose brisk-video timing heuristics as universal errors |
+| Passing timing resolver but unreadable hero | Reports editorial review unresolved and routes to composition/QA; does not equate structural coverage with visual quality |
+
+These scenarios describe expected decisions, not completed independent model evaluations.

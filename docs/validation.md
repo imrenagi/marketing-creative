@@ -112,3 +112,9 @@ Validated on 2026-10-16: expanded the copywriter to produce multiple complete ve
 All 116 offline Python regressions passed with Pillow and no skips. Skill-creator structural validation, package/resource-link checks, Claude Performance/marketplace validation and diff checks passed. Two 16-file Performance archives were byte-identical; extraction verified the new reference and sibling handoff resources. The release regression now checks that the voice/style reference ships, and the three release regressions passed again after incorporating the automated v0.3.0 metadata. The package inventory contains 89 files across both plugins.
 
 The new scenarios and illustrative copy were reviewed as guidance, not executed as independent model evaluations. No live campaign, audience testing, native-language review, global installation or paid production was performed. Unchanged Node release-tooling checks were not repeated for this guidance update; their prior results remain recorded above.
+
+## Beat planning guidance
+
+Validated on 2026-10-16: strengthened motion-storyboard with job/hero/action choices, per-ratio zones, cue-driven handoffs and editorial review gates, retaining intentional silence and evidence-aware stylization. The changed entry point passed skill-creator structural validation; package inventory/resource links (90 files) and diff checks passed. Hyperframe Pro attribution and distributed MIT notice are retained.
+
+This increment changes guidance only; code regressions were not repeated. Added behavioral scenarios are an evaluation plan, not completed independent model evaluations. No visual, listening, renderer, paid-provider or retention checks were performed.

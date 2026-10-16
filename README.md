@@ -24,6 +24,8 @@ Two independently installable plugins cover campaign planning, copywriting and c
 
 Use only the stages needed. Supplied briefs, selected ideas and recordings enter downstream; small revisions do not restart intake. Planning alone does not launch campaigns or render a video. A general explainer can bypass advertising strategy. Existing ad-video-director invocations continue to work, with strategy and ideation routed to their new owners when needed.
 
+`motion-storyboard` develops each beat from its job to its hero visual, visible action, framing/zones and cue-driven handoff before composition. Its [beat-planning reference](plugins/marketing-creative/skills/motion-storyboard/references/beat-planning.md) includes concrete visual choices and editorial review gates. Those gates complement executable timing/visibility checks; they do not claim to predict retention.
+
 ## Install
 
 Plugins live in `plugins/marketing-creative/` and `plugins/marketing-performance/`. Install either or both complete trees; each plugin contains its own required resources. Creative production accepts supplied briefs without the Performance plugin.
