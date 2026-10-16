@@ -1,3 +1,9 @@
+## [0.3.0](https://github.com/imrenagicom/marketing-creative/compare/v0.2.1...v0.3.0) (2026-10-16)
+
+### Features
+
+* **performance:** add marketing copywriter skill ([cd2512a](https://github.com/imrenagicom/marketing-creative/commit/cd2512a8439d44086aded91e4218fa28cbb5385f))
+
 ## [0.2.1](https://github.com/imrenagicom/marketing-creative/compare/v0.2.0...v0.2.1) (2026-10-16)
 
 ### Refactoring
