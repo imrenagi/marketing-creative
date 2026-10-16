@@ -1,3 +1,10 @@
+## [0.2.0](https://github.com/imrenagicom/marketing-creative/compare/v0.1.1...v0.2.0) (2026-10-16)
+
+### Features
+
+* **performance:** add campaign utm planning and workspace records ([e4ab292](https://github.com/imrenagicom/marketing-creative/commit/e4ab29262bbd19843c15b99f692411dce6897b9e))
+* **plugins:** move marketing briefs into marketing-performance ([0e62fd2](https://github.com/imrenagicom/marketing-creative/commit/0e62fd2bb350c70a99f99fa1cc0eb102ae07bee1))
+
 ## [0.1.1](https://github.com/imrenagicom/marketing-creative/compare/v0.1.0...v0.1.1) (2026-10-15)
 
 ### Automation
