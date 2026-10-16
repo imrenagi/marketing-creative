@@ -1,11 +1,12 @@
 # Marketing Creative and Performance
 
-Two independently installable plugins cover campaign planning, copywriting and creative production. Marketing Performance owns `marketing-brief`, `marketing-copywriter` and `campaign-manager`; Marketing Creative owns twelve skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
+Two independently installable plugins cover campaign planning, copywriting and creative production. Marketing Performance owns `marketing-brief`, `marketing-copywriter` and `campaign-manager`; Marketing Creative owns thirteen skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
 
 ## Skills and handoffs
 
 | Skill | Input → output |
 | --- | --- |
+| `marketing-video` | Topic, brief, script or existing video → appropriate workflow stages and requested video deliverables |
 | `campaign-manager` (marketing-performance) | Product campaign → shared UTM conventions, tagged links and versioned workspace records |
 | `marketing-brief` (marketing-performance) | Product facts, research and goal → strategic brief, evidence, placement requirements |
 | `marketing-copywriter` (marketing-performance) | Brief or draft → exact ad, landing-page, email or social copy, voice/style variants and localization |
@@ -23,6 +24,8 @@ Two independently installable plugins cover campaign planning, copywriting and c
 | `motion-video-qa` | Source/build/export → integrity checks, frame review and encoded-file verification |
 
 Use only the stages needed. Supplied briefs, selected ideas and recordings enter downstream; small revisions do not restart intake. Planning alone does not launch campaigns or render a video. A general explainer can bypass advertising strategy. Existing ad-video-director invocations continue to work, with strategy and ideation routed to their new owners when needed.
+
+Start video work with [`marketing-video`](plugins/marketing-creative/skills/marketing-video/SKILL.md) (Claude: `/marketing-creative:marketing-video`). It explains the topic/brief → concept → script/style → voice → beat plan → composition → QA → exports workflow, selects the missing stages and routes revisions from the changed dependency. `motion-video-producer` remains responsible for the production project and final exports; every focused skill remains directly usable. Existing scripts, recordings and projects skip completed stages.
 
 `motion-storyboard` develops each beat from its job to its hero visual, visible action, framing/zones and cue-driven handoff before composition. Its [beat-planning reference](plugins/marketing-creative/skills/motion-storyboard/references/beat-planning.md) includes concrete visual choices and editorial review gates. Those gates complement executable timing/visibility checks; they do not claim to predict retention.
 
@@ -53,6 +56,12 @@ Invoke /marketing-performance:marketing-brief or /marketing-creative:creative-id
 For clients without plugin support, reference the complete skill tree from the client's instruction file, retaining all sibling skills and third-party/ notices. No global installation or client configuration is changed by this repository.
 
 ## Example requests
+
+> Use $marketing-video to turn this topic into a 30-second Indonesian explainer for Reels. Develop the script, narration, beat plan and finished vertical video using our supplied brand assets.
+
+> Use $marketing-video with this approved script and recording. Produce 16:9, 9:16, 4:5 and 1:1 versions; preserve the wording and voice, plan each ratio's visual zones, and deliver verified exports.
+
+> Use $marketing-video to revise this project's CTA and fix the crowded result beat. Preserve the rest of the take and rebuild the affected variants.
 
 > Use $marketing-brief for our task app. Goal: users completing their first assignment. Audience: small design teams. We have real captures but no verified trial offer. Plan Meta feed, Reels, landscape and square deliverables.
 

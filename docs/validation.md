@@ -126,3 +126,11 @@ Validated on 2026-10-16 with Python 3.12, Pillow, Node and FFmpeg 8.1: all 128 o
 motion-voice passed skill-creator structural validation; package/resource links (91 files) and diff checks passed. Loudnorm parameters and fallback behavior were checked against official FFmpeg filter documentation on the same date; the portable reference records the source. No TTS API/model/pricing change was made. New generation normalizes by default and retains a raw backup; imported recordings preserve level by default.
 
 No paid provider requests, human listening, real-speech prosody evaluation, HyperFrames preview/render or finished stereo-mix review was performed. The numeric results establish local synthetic-source processing and state integrity, not audible seam quality or final export loudness. Behavioral scenarios remain an evaluation plan. Unchanged Node release tests were not repeated for this audio increment.
+
+## Video workflow entry point
+
+Validated on 2026-10-16: added normally discoverable marketing-video as the workflow/revision entry point, with motion-video-producer retaining project ownership and final delivery. It maps every Creative stage, optional Marketing Performance strategy, silent/music-led paths, downstream inputs, revision dependencies and exact-request Veo/Omni approval. Updated dual-client discovery descriptions and the explicit inventory to thirteen Creative skills (sixteen across both plugins).
+
+The entry point and revised producer passed skill-creator checks. Repository inventory/resource links passed for 93 files. Both Claude Creative and marketplace validations passed. Two 77-file Creative archives were byte-identical; extraction verified all fourteen entry-point sibling links and independently runnable audio command help. Release regressions check the new entry point and beat/audio references in Creative and exclusion from Performance. All 128 offline Python regressions passed without skips, and all ten Node release tests passed. The preexisting aggregate skill-count assertion was updated for the added skill.
+
+No global plugin installation, independent model forward-test, live provider request, visual/listening review or HyperFrames production render was performed. The entry-point scenarios remain an evaluation plan, and synthetic audio tests do not establish real-speech or final-mix quality.

@@ -7,7 +7,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "marketing-creative"
 PLUGINS = {
-    "marketing-creative": {"creative-ideation", "ad-video-director",
+    "marketing-creative": {"marketing-video", "creative-ideation", "ad-video-director",
         "motion-video-producer", "motion-art-director", "motion-storyboard",
         "motion-voice", "motion-composer", "motion-video-qa",
         "marketing-image-board", "marketing-image-producer", "marketing-veo-video",

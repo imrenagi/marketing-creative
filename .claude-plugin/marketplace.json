@@ -4,13 +4,13 @@
     "name": "Imre Nagi"
   },
   "metadata": {
-    "description": "Campaign planning, copywriting and UTM operations alongside creative image and video production"
+    "description": "Campaign planning, copywriting and UTM operations alongside image production and a complete video workflow"
   },
   "plugins": [
     {
       "name": "marketing-creative",
       "source": "./plugins/marketing-creative",
-      "description": "Twelve creative skills for concepts, images, opt-in Veo/Omni clips and multi-ratio video production"
+      "description": "Thirteen creative skills with a video workflow entry point, beat planning, narration finishing, images and opt-in Veo/Omni clips"
     },
     {
       "name": "marketing-performance",

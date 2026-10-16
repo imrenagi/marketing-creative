@@ -7,6 +7,8 @@ description: Orchestrate marketing videos and explainers from images, footage, a
 
 Own the authorized deliverable and project state. Resume from existing artifacts before asking questions. For an inspection, edit, render or status request, perform that operation without restarting the full workflow.
 
+[marketing-video](../marketing-video/SKILL.md) is the user-facing video workflow entry point and revision router. Direct invocations here remain supported; do not bounce an existing production back through intake. Project state, mixed-media integration and final delivery stay with this producer.
+
 Own the mixed-media timeline and final exports. Provider video skills create source assets or standalone clips; they do not replace this orchestrator, its script/timing decisions or its final QA. Use supplied/local assets and deterministic composition by default. Veo and Omni are optional, explicitly approved additions because they cost more.
 
 ## Route the missing work

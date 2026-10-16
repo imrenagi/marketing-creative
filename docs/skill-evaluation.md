@@ -146,3 +146,18 @@ These scenarios describe expected decisions, not completed independent model eva
 | Trim or replacement after a measured take | Removes stale source-loudness metadata, retimes actual frames and re-normalizes only when requested/needed for finishing |
 
 Executable regressions use synthetic PCM, local FFmpeg and mocked narration generation; no paid provider quality or listening review is implied.
+
+## Video workflow entry point
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Topic only, requested finished vertical explainer | marketing-video identifies the minimal missing brief/concept/script/style/voice/beat stages, uses producer-owned project setup and continues through composition/QA/export within scope |
+| Approved script and existing recording in four requested ratios | Skips concept/strategy restart and paid TTS; plans per-ratio zones and semantic timing, then assembles/reviews/exports all four variants |
+| Silent or music-led promo | Skips voice, uses deliberate seconds or measured track timing, and uses media/audio runtime guidance conditionally |
+| Existing project needs one spoken-line and visual fix | Starts at voice and affected beat, updates changed claims/cues/pause rules/captions, preserves the rest and reviews neighbors/affected variants |
+| Only external caption copy or render requested | Performs that focused operation without repeated intake; distinguishes burned-in changes that need rendering |
+| General video permission with optional Veo/Omni idea | Continues local work and prepares the exact paid request; does not invoke either provider without the required explicit approval |
+| Marketing Creative installed alone | Uses portable sibling links and optional strategy handoff; does not require Marketing Performance, installed upstream tools or private paths to read the workflow |
+| Framework unavailable but editable plan can be completed | Completes independent artifacts and reports preview/render/listening checks unperformed rather than claiming delivery |
+
+These scenarios are a behavioral evaluation plan, not executed independent model evaluations.

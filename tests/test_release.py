@@ -38,6 +38,10 @@ class ReleaseTests(unittest.TestCase):
                     self.assertEqual(json.loads(package.read(f"{client}/plugin.json"))["version"],
                                      "0.2.3")
                 self.assertIn("skills/creative-ideation/SKILL.md", package.namelist())
+                for resource in ("SKILL.md", "agents/openai.yaml"):
+                    self.assertIn(f"skills/marketing-video/{resource}", package.namelist())
+                self.assertIn("skills/motion-storyboard/references/beat-planning.md", package.namelist())
+                self.assertIn("skills/motion-voice/references/loudness-and-pauses.md", package.namelist())
                 self.assertNotIn("skills/marketing-brief/SKILL.md", package.namelist())
                 self.assertNotIn("skills/marketing-copywriter/SKILL.md", package.namelist())
                 self.assertFalse(any("node_modules" in name for name in package.namelist()))
@@ -49,6 +53,7 @@ class ReleaseTests(unittest.TestCase):
                                  "references/voice-and-style.md"):
                     self.assertIn(f"skills/marketing-copywriter/{resource}", package.namelist())
                 self.assertNotIn("skills/creative-ideation/SKILL.md", package.namelist())
+                self.assertNotIn("skills/marketing-video/SKILL.md", package.namelist())
                 for client in (".codex-plugin", ".claude-plugin"):
                     manifest = json.loads(package.read(f"{client}/plugin.json"))
                     self.assertEqual(manifest["version"], "0.2.3")
