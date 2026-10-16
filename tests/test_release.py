@@ -43,6 +43,7 @@ class ReleaseTests(unittest.TestCase):
 
             with zipfile.ZipFile(Path(directory) / "marketing-performance-plugin.zip") as package:
                 self.assertIn("skills/marketing-brief/SKILL.md", package.namelist())
+                self.assertIn("skills/campaign-utm/scripts/build_utm.py", package.namelist())
                 self.assertNotIn("skills/creative-ideation/SKILL.md", package.namelist())
                 for client in (".codex-plugin", ".claude-plugin"):
                     manifest = json.loads(package.read(f"{client}/plugin.json"))

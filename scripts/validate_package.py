@@ -12,7 +12,7 @@ PLUGINS = {
         "motion-voice", "motion-composer", "motion-video-qa",
         "marketing-image-board", "marketing-image-producer", "marketing-veo-video",
         "marketing-omni-video"},
-    "marketing-performance": {"marketing-brief"},
+    "marketing-performance": {"marketing-brief", "campaign-utm"},
 }
 
 

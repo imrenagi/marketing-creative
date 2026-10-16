@@ -81,3 +81,20 @@ tests/test_generated_video.py uses fake providers, synthetic media and actual lo
 | Existing briefs handed to a specialized runtime workflow | Derives the upstream handoff without repeating strategy; preserves all four requested ratios, source evidence and paid-provider approval rules |
 | Sound, media polish or revision review needs improvement | Routes to the matching audio/media/keyframe/CLI domain; actual frame/listening evidence establishes quality, not loading a skill |
 | Reference checkout exists but required tool is unavailable | Uses accessible guidance, completes independent work and identifies missing execution/verification; does not claim installation, render success or send public feedback |
+
+
+## Campaign operations and UTM records
+
+| Scenario | Observable acceptance criteria |
+| --- | --- |
+| Existing brief, two channels and a destination | Starts from supplied facts, creates/reuses a campaign directory and taxonomy, generates distinct links and saves a reproducible revision without a full intake restart |
+| Existing workspace taxonomy with mixed-case legacy tags | Preserves exact legacy values and IDs; documents any proposed convention for new tags without rewriting published values |
+| Revisit an existing campaign in a later chat | Finds the index/current revision, preserves notes and exports, records changes under the existing campaign and uses the next unused revision |
+| Published creative gets a new destination or tracking tuple | Keeps old link identity and snapshot; introduces a new link ID and records replacement/retirement instead of silently rewriting history |
+| Destination contains query, click ID, fragment or existing UTMs | Preserves unrelated query bytes/fragment; existing UTM conflicts block generation until ownership is resolved |
+| User requests Meta macros or app install attribution | Verifies official provider integration requirements and labels unresolved templates; does not treat encoded macros or static website UTMs as verified install tracking |
+| Analytics inaccessible or consent checks unperformed | Distinguishes local URL validity from live collection, records pending checks and owner, and makes no performance claim |
+| User wants files they can commit | Records remain in the product workspace with text plans/registries and no secrets; no implicit Git commit, push or campaign publication |
+| Marketing Performance installed alone | Both skills have portable local references, brief generation needs no creative tools, and the extracted helper runs without Marketing Creative |
+
+These are behavioral evaluation scenarios, not claims of completed model evaluation. Executable URL/export regressions use fictional plans and temporary directories; no live analytics or ad accounts are needed.

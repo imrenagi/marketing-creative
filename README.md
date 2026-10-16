@@ -1,11 +1,12 @@
 # Marketing Creative and Performance
 
-Two independently installable plugins cover campaign planning and creative production. Marketing Performance owns `marketing-brief` and campaign operations; Marketing Creative owns twelve skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
+Two independently installable plugins cover campaign planning and creative production. Marketing Performance owns `marketing-brief` and `campaign-utm`; Marketing Creative owns twelve skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
 
 ## Skills and handoffs
 
 | Skill | Input → output |
 | --- | --- |
+| `campaign-utm` (marketing-performance) | Product campaign → shared UTM conventions, tagged links and versioned workspace records |
 | `marketing-brief` (marketing-performance) | Product facts, research and goal → strategic brief, evidence, placement requirements |
 | `creative-ideation` | Marketing brief → distinct concepts and selected creative brief |
 | `marketing-image-board` | Brief, concepts and optional references → one board with a chosen tile count/ratio and locally cropped previews |
@@ -63,6 +64,23 @@ For clients without plugin support, reference the complete skill tree from the c
 > Use $marketing-image-board with this brief and any attached references. Choose a useful number of concepts and a portrait or landscape sheet layout. Ensure each concept can be cropped separately.
 
 > Use $marketing-image-producer to regenerate my three selected tiles as separate 4K assets through Gemini's discounted Batch API. Keep the original source image as the product reference.
+
+## Campaign records and UTMs
+
+Use `$campaign-utm` (Claude: `/marketing-performance:campaign-utm`) to combine marketing operations naming rules with campaign-specific links. It reuses the current workspace's campaign directory, or defaults to `marketing/campaigns/`, with a shared index/convention and a directory per stable campaign ID. Plans, measurement notes, change history and versioned CSV/Markdown exports stay in the product workspace for review and Git commits. The skill does not automatically commit or publish campaigns.
+
+> Use $campaign-utm for our product activation campaign across Instagram Reels and our newsletter. Reuse the existing brief and tagging conventions. Generate the destination URLs and save the campaign plan, measurement checks and UTM registry in this workspace.
+
+The bundled static URL helper needs Python 3.10+ and no API keys or external packages:
+
+```sh
+UTM_TOOL="$PWD/plugins/marketing-performance/skills/campaign-utm/scripts/build_utm.py"
+# Replace with your saved plan; the bundled example is fictional.
+python3 "$UTM_TOOL" /path/to/product/marketing/campaigns/campaign-id/campaign.json --dry-run
+python3 "$UTM_TOOL" /path/to/product/marketing/campaigns/campaign-id/campaign.json --out /path/to/product/marketing/campaigns/campaign-id/tracking/v001
+```
+
+Use the next unused revision for changes. Existing exports and published link identities are preserved; conflicts with destination UTMs need explicit resolution. The helper preserves other query parameters/fragments and encodes values once. Local validation does not prove redirect preservation or analytics collection; record those checks separately. The [workspace record contract](plugins/marketing-performance/skills/campaign-utm/references/workspace-records.md), [link schema](plugins/marketing-performance/skills/campaign-utm/references/link-plan.md) and [naming/source register](plugins/marketing-performance/skills/campaign-utm/references/utm-conventions.md) describe the handoff and limits.
 
 ## Production tools
 

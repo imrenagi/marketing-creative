@@ -79,3 +79,14 @@ Validated on 2026-10-16:
 - Both allowlisted archives built outside the repository: 73 Creative files and 5 Performance files. Local package/resource-link and diff checks passed.
 
 No global plugin installation, live campaigns, paid provider calls, rendering or attribution collection was performed. Historical visual/provider checks above were not rerun.
+
+## Campaign UTM workflow
+
+Validated on 2026-10-16:
+
+- All 116 offline Python regressions passed with Pillow installed and no skips. Fourteen new tests cover inherited/exact taxonomy values, Unicode and delimiter encoding, preserved raw queries/click IDs/fragments, existing UTM conflicts, malformed plans/URLs/macros, duplicate IDs/URLs, publication metadata, no-write dry-runs, exact input/CSV exports, retained prior revisions, duplicate JSON keys and symlink refusal.
+- The Performance archive was built twice with byte-identical results, then extracted into a temporary directory. Its helper successfully validated the bundled fictional plan without the Creative plugin or external Python dependencies.
+- Both Performance skill entry points passed skill-creator structural checks; both plugin resource inventories and all packaged links passed the repository validator (85 files total: 73 Creative, 12 Performance). Both final archives built outside the repository. Claude Performance/marketplace validation and diff checks passed; Creative manifest and 10 Node release checks had passed during the preceding split increment and were unchanged here.
+- Behavioral scenarios were added for later-chat resumption, published-link identity, existing taxonomies, dynamic/app attribution boundaries and commit-ready records. They document expected behavior, not completed independent model evaluations.
+
+No live campaign, redirects, analytics receipt, conversion attribution, global installation, paid generation or video rendering was tested. The helper validates individual static snapshots; published-history comparison, taxonomy choices, campaign notes and live measurement evidence remain responsibilities of the skill workflow.
