@@ -90,3 +90,7 @@ Validated on 2026-10-16:
 - Behavioral scenarios were added for later-chat resumption, published-link identity, existing taxonomies, dynamic/app attribution boundaries and commit-ready records. They document expected behavior, not completed independent model evaluations.
 
 No live campaign, redirects, analytics receipt, conversion attribution, global installation, paid generation or video rendering was tested. The helper validates individual static snapshots; published-history comparison, taxonomy choices, campaign notes and live measurement evidence remain responsibilities of the skill workflow.
+
+## Campaign Manager rename
+
+Validated on 2026-10-16: renamed the skill folder, frontmatter, UI name and invocation to `campaign-manager`; updated README links, the brief handoff, package inventory and archive/helper regression paths. All 116 offline Python regressions passed without skips, including standalone extracted-archive execution. Both changed skill entry points passed structural validation; package/resource checks, a Performance archive build, Claude Performance/marketplace validation and diff checks passed. This rename did not change URL generation or measurement behavior; no live attribution checks were performed.

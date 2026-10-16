@@ -1,9 +1,9 @@
 ---
-name: campaign-utm
+name: campaign-manager
 description: Define campaign UTM conventions, generate tagged product campaign links, and maintain campaign plans and tracking records in the current workspace. Use for new campaign tagging or revisions to existing UTMs.
 ---
 
-# Campaign UTM
+# Campaign Manager
 
 Own both marketing operations (shared taxonomy and traceability) and campaign management (campaign decisions and usable links). Save the work in the user's current workspace so it can be reviewed and committed. Generating UTMs does not authorize campaign publication, ad-account changes or analytics implementation.
 

@@ -11,7 +11,7 @@ from urllib.parse import parse_qsl, urlsplit
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "plugins/marketing-performance/skills/campaign-utm"
+SKILL = ROOT / "plugins/marketing-performance/skills/campaign-manager"
 TOOL = SKILL / "scripts/build_utm.py"
 spec = importlib.util.spec_from_file_location("build_utm", TOOL)
 UTM = importlib.util.module_from_spec(spec)
@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from build_plugin import build
 
 
-class CampaignUTMTests(unittest.TestCase):
+class CampaignManagerTests(unittest.TestCase):
     def setUp(self):
         self.plan = json.loads((SKILL / "assets/campaign.example.json").read_text())
         self.temp = tempfile.TemporaryDirectory()
@@ -168,7 +168,7 @@ class CampaignUTMTests(unittest.TestCase):
         extracted = self.root / "installed"
         with zipfile.ZipFile(first) as archive:
             archive.extractall(extracted)
-        skill = extracted / "skills/campaign-utm"
+        skill = extracted / "skills/campaign-manager"
         result = subprocess.run([sys.executable, str(skill / "scripts/build_utm.py"),
                                  str(skill / "assets/campaign.example.json"), "--dry-run"],
                                 capture_output=True, text=True)
