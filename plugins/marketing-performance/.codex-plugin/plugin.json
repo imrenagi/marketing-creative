@@ -1,0 +1,21 @@
+{
+  "name": "marketing-performance",
+  "version": "0.1.1",
+  "description": "Marketing briefs, campaign operations and documented UTM planning in the current workspace.",
+  "author": {
+    "name": "Imre Nagi"
+  },
+  "repository": "https://github.com/imrenagicom/marketing-creative",
+  "keywords": [
+    "marketing",
+    "campaigns",
+    "utm",
+    "analytics",
+    "marketing-operations"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Marketing Performance",
+    "shortDescription": "Plan campaigns and maintain documented UTM links"
+  }
+}

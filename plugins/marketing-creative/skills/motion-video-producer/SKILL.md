@@ -13,7 +13,7 @@ Own the mixed-media timeline and final exports. Provider video skills create sou
 
 | Need | Owner |
 | --- | --- |
-| Campaign strategy or audience/offer decisions | [marketing-brief](../marketing-brief/SKILL.md) |
+| Campaign strategy or audience/offer decisions | `$marketing-brief` (optional marketing-performance plugin; use the supplied brief or establish the necessary strategic facts directly if unavailable) |
 | Distinct creative ideas or a selected creative brief | [creative-ideation](../creative-ideation/SKILL.md) |
 | Exact ad script and production direction | [ad-video-director](../ad-video-director/SKILL.md) |
 | Contact-sheet image exploration | [marketing-image-board](../marketing-image-board/SKILL.md) |

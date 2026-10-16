@@ -37,8 +37,17 @@ class ReleaseTests(unittest.TestCase):
                 for client in (".codex-plugin", ".claude-plugin"):
                     self.assertEqual(json.loads(package.read(f"{client}/plugin.json"))["version"],
                                      "0.2.3")
-                self.assertIn("skills/marketing-brief/SKILL.md", package.namelist())
+                self.assertIn("skills/creative-ideation/SKILL.md", package.namelist())
+                self.assertNotIn("skills/marketing-brief/SKILL.md", package.namelist())
                 self.assertFalse(any("node_modules" in name for name in package.namelist()))
+
+            with zipfile.ZipFile(Path(directory) / "marketing-performance-plugin.zip") as package:
+                self.assertIn("skills/marketing-brief/SKILL.md", package.namelist())
+                self.assertNotIn("skills/creative-ideation/SKILL.md", package.namelist())
+                for client in (".codex-plugin", ".claude-plugin"):
+                    manifest = json.loads(package.read(f"{client}/plugin.json"))
+                    self.assertEqual(manifest["version"], "0.2.3")
+                    self.assertEqual(manifest["name"], "marketing-performance")
 
     def test_invalid_version_does_not_write(self):
         with tempfile.TemporaryDirectory() as directory:

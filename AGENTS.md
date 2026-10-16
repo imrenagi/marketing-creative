@@ -2,14 +2,15 @@
 
 ## Purpose and layout
 
-Marketing Creative is a shared Codex and Claude Code skill plugin. Read
+Marketing Creative and Marketing Performance are shared Codex and Claude Code skill plugins. Read
 README.md for the workflow, configuration and validation commands, then
 read the relevant skill entry point and its linked references before editing.
 
-- `plugins/marketing-creative/skills/` owns skill instructions, UI metadata,
-  references, executable helpers and example assets. Install and package the
-  complete tree because skills share resources.
-- The plugin's `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json`
+- `plugins/marketing-creative/skills/` and `plugins/marketing-performance/skills/`
+  own skill instructions, UI metadata,
+  references, executable helpers and example assets. Install and package each
+  complete tree because skills within a plugin share resources.
+- Each plugin's `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json`
   must agree on shared metadata and version. Root marketplace files own
   discovery; update their descriptions when the suite changes.
 - `scripts/validate_package.py` defines the explicit distribution allowlist;

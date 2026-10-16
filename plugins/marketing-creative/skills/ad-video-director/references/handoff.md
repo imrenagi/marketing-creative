@@ -1,6 +1,6 @@
 # A brief someone can execute
 
-Marketing strategy now belongs to [marketing-brief](../../marketing-brief/SKILL.md); distinct concepts and the selected creative brief belong to [creative-ideation](../../creative-ideation/SKILL.md). This reference describes the selected idea's executable script. Preserve supplied upstream decisions instead of repeating intake.
+Marketing strategy now belongs to `$marketing-brief` (optional marketing-performance plugin; use the supplied brief or establish the necessary strategic facts directly if unavailable); distinct concepts and the selected creative brief belong to [creative-ideation](../../creative-ideation/SKILL.md). This reference describes the selected idea's executable script. Preserve supplied upstream decisions instead of repeating intake.
 
 Scale the deliverable to the request. A short revision needs less material than a campaign, but exact words and actions still matter.
 

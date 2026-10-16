@@ -5,7 +5,7 @@ description: Generate distinct creative concepts from a marketing brief, or deve
 
 # Creative Ideation
 
-Read `MARKETING_BRIEF.md` or its supplied equivalent. If it is incomplete, infer noncritical details explicitly and use [marketing-brief](../marketing-brief/SKILL.md) only for strategic gaps that affect the concepts. Do not repeat answered intake.
+Read `MARKETING_BRIEF.md` or its supplied equivalent. If it is incomplete, infer noncritical details explicitly and use `$marketing-brief` (optional marketing-performance plugin; use the supplied brief or establish the necessary strategic facts directly if unavailable) only for strategic gaps that affect the concepts. Do not repeat answered intake.
 
 ## Develop ideas, not skins
 

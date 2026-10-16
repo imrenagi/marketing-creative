@@ -1,12 +1,12 @@
-# Marketing Creative
+# Marketing Creative and Performance
 
-Thirteen agent skills take a campaign from marketing strategy through creative ideas, image assets, exact scripts and animated video production. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
+Two independently installable plugins cover campaign planning and creative production. Marketing Performance owns `marketing-brief` and campaign operations; Marketing Creative owns twelve skills for ideas, images, scripts and videos. Codex and Claude Code use the same source. Production supports **16:9, 9:16, 4:5 and 1:1** as independently composed and reviewed variants.
 
 ## Skills and handoffs
 
 | Skill | Input → output |
 | --- | --- |
-| `marketing-brief` | Product facts, research and goal → strategic brief, evidence, placement requirements |
+| `marketing-brief` (marketing-performance) | Product facts, research and goal → strategic brief, evidence, placement requirements |
 | `creative-ideation` | Marketing brief → distinct concepts and selected creative brief |
 | `marketing-image-board` | Brief, concepts and optional references → one board with a chosen tile count/ratio and locally cropped previews |
 | `marketing-image-producer` | Brief or selected concepts/tiles, with optional references → standalone image assets or discounted asynchronous Gemini batches |
@@ -24,13 +24,14 @@ Use only the stages needed. Supplied briefs, selected ideas and recordings enter
 
 ## Install
 
-The complete plugin lives in plugins/marketing-creative/. Install the whole suite: sibling references and tools are part of its contract. Copying only one skill folder is no longer a complete standalone installation.
+Plugins live in `plugins/marketing-creative/` and `plugins/marketing-performance/`. Install either or both complete trees; each plugin contains its own required resources. Creative production accepts supplied briefs without the Performance plugin.
 
 ### Codex
 
 ```sh
 codex plugin marketplace add /absolute/path/to/marketing-creative
 codex plugin add marketing-creative@marketing-creative
+codex plugin add marketing-performance@marketing-creative
 ```
 
 Or register imrenagicom/marketing-creative after the relevant release is published. Reload the client if needed. Invoke $marketing-brief, $creative-ideation, or any skill in the table.
@@ -38,10 +39,10 @@ Or register imrenagicom/marketing-creative after the relevant release is publish
 ### Claude Code
 
 ```sh
-claude --plugin-dir ./plugins/marketing-creative
+claude --plugin-dir ./plugins/marketing-creative --plugin-dir ./plugins/marketing-performance
 ```
 
-Invoke /marketing-creative:marketing-brief, for example. For installation, use /plugin marketplace add /absolute/path/to/marketing-creative, then /plugin install marketing-creative@marketing-creative.
+Invoke /marketing-performance:marketing-brief or /marketing-creative:creative-ideation, for example. For installation, use /plugin marketplace add /absolute/path/to/marketing-creative, then /plugin install marketing-creative@marketing-creative and/or /plugin install marketing-performance@marketing-creative. `marketing-brief` has moved: its Claude namespace is now `marketing-performance`; its Codex invocation remains `$marketing-brief`.
 
 For clients without plugin support, reference the complete skill tree from the client's instruction file, retaining all sibling skills and third-party/ notices. No global installation or client configuration is changed by this repository.
 
@@ -244,8 +245,10 @@ python3 -m pip install -r plugins/marketing-creative/skills/marketing-image-prod
 python3 -m unittest discover -s tests -v
 python3 scripts/validate_package.py
 claude plugin validate ./plugins/marketing-creative
+claude plugin validate ./plugins/marketing-performance
 claude plugin validate ./.claude-plugin/marketplace.json
 python3 scripts/build_plugin.py --output /tmp/marketing-creative-plugin.zip
+python3 scripts/build_plugin.py --plugin marketing-performance --output /tmp/marketing-performance-plugin.zip
 ```
 
 The deterministic ZIP includes only manifests, skill instructions/references, approved scripts/example resources and upstream notices. It excludes samples, local documents, generated video/audio, dependencies and credentials. samples/ and local-docs/ stay local and ignored. Tests do not call paid APIs.
@@ -262,7 +265,7 @@ The public release line starts at `v0.1.0`. Every push to `main` with new commit
 
 Commit messages determine the highest version bump since the last tag: `feat: ...` produces a minor release, `feat!: ...` or a `BREAKING CHANGE:` footer produces a major release, and all other changes produce a patch release, including skill documentation and ordinary commit messages. A rerun without new commits creates no release. Keep using conventional commits so the generated release notes identify changes clearly, including skill documentation.
 
-Releases synchronize both client manifests and the private release-tooling package/lockfile, update `CHANGELOG.md`, and commit those files with `[skip ci]` before tagging. This keeps marketplace installations from Git and the attached `marketing-creative-plugin.zip` at the same version. The ZIP contains the complete allowlisted skill tree and notices, built outside the repository. Nothing is published to npm.
+Releases synchronize both client manifests for each plugin and the private release-tooling package/lockfile, update `CHANGELOG.md`, and commit those files with `[skip ci]` before tagging. This keeps marketplace installations from Git and the attached `marketing-creative-plugin.zip` and `marketing-performance-plugin.zip` at the same version. The ZIP contains the complete allowlisted skill tree and notices, built outside the repository. Nothing is published to npm.
 
 The workflow uses GitHub's automatic `GITHUB_TOKEN` with `contents: write`; no npm token or manually configured release secret is required. If branch rules later prevent release commits or tags, allow an appropriate GitHub App to perform those actions before expecting releases to succeed. Release runs are serialized and in-progress runs are not cancelled. The workflow also supports manual dispatch to retry a failed run; inspect any existing tag/release first if publication was interrupted.
 

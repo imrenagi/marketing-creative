@@ -68,3 +68,14 @@ The workflow validates before publishing, uses `[self-hosted, linux]` for both j
 ## GitHub-hosted runner switch
 
 On 2026-10-15, verified that this repository is public and that GitHub documents standard hosted runners as free and unlimited for public repositories. Both jobs now use `ubuntu-latest`. The previous self-hosted run was queued because no matching runner was available. The earlier authenticated semantic-release dry-run passed and selected `v0.1.1`; it did not create that tag or publish a release. Hosted validation and publication will be checked after this change is pushed. The local test results and dependency-audit limitations above remain applicable.
+
+## Marketing Performance plugin split
+
+Validated on 2026-10-16:
+
+- Moved `marketing-brief` to the independently packaged Marketing Performance plugin; creative handoffs accept supplied briefs or optionally invoke the new owner without cross-plugin filesystem links.
+- All 102 offline Python regressions passed in a Python 3.12 virtual environment with Pillow; all 10 Node release checks passed. Release fixtures verified both archive identities, synchronized versions and the absence of the moved skill from Creative.
+- Four changed skill entry points passed skill-creator structural checks. Both Claude plugin manifests and the marketplace passed CLI validation.
+- Both allowlisted archives built outside the repository: 73 Creative files and 5 Performance files. Local package/resource-link and diff checks passed.
+
+No global plugin installation, live campaigns, paid provider calls, rendering or attribution collection was performed. Historical visual/provider checks above were not rerun.

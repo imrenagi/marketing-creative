@@ -9,7 +9,7 @@ Develop the selected concept into a video someone can shoot or animate. Preserve
 
 ## Start from the selected idea
 
-Read `MARKETING_BRIEF.md`, `CREATIVE_BRIEF.md`, assets and constraints. A supplied equivalent is sufficient; do not require document creation for a small script request. For a fresh full-campaign request, use [marketing-brief](../marketing-brief/SKILL.md) then [creative-ideation](../creative-ideation/SKILL.md). If the user already chose an idea, develop it directly. Route strategic changes or requests for alternative concepts back to those skills instead of silently replacing the direction.
+Read `MARKETING_BRIEF.md`, `CREATIVE_BRIEF.md`, assets and constraints. A supplied equivalent is sufficient; do not require document creation for a small script request. For a fresh full-campaign request, use `$marketing-brief` (optional marketing-performance plugin; use the supplied brief or establish the necessary strategic facts directly if unavailable) then [creative-ideation](../creative-ideation/SKILL.md). If the user already chose an idea, develop it directly. Route strategic changes or requests for alternative concepts back to those skills instead of silently replacing the direction.
 
 ## Write the executable version
 

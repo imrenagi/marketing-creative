@@ -6,6 +6,10 @@ export const archivePath = join(
   "marketing-creative-plugin.zip",
 );
 
+export const performanceArchivePath = join(
+  process.env.RUNNER_TEMP || tmpdir(), "marketing-performance-plugin.zip",
+);
+
 export default {
   branches: ["main"],
   repositoryUrl: "https://github.com/imrenagicom/marketing-creative.git",
@@ -46,11 +50,16 @@ export default {
         "package-lock.json",
         "plugins/marketing-creative/.codex-plugin/plugin.json",
         "plugins/marketing-creative/.claude-plugin/plugin.json",
+        "plugins/marketing-performance/.codex-plugin/plugin.json",
+        "plugins/marketing-performance/.claude-plugin/plugin.json",
       ],
       message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
     }],
     ["@semantic-release/github", {
-      assets: [{ path: archivePath, label: "Marketing Creative complete skill plugin" }],
+      assets: [
+        { path: archivePath, label: "Marketing Creative complete skill plugin" },
+        { path: performanceArchivePath, label: "Marketing Performance complete skill plugin" },
+      ],
       successComment: false,
       failComment: false,
       failTitle: false,

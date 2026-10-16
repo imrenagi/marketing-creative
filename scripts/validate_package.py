@@ -6,6 +6,14 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "marketing-creative"
+PLUGINS = {
+    "marketing-creative": {"creative-ideation", "ad-video-director",
+        "motion-video-producer", "motion-art-director", "motion-storyboard",
+        "motion-voice", "motion-composer", "motion-video-qa",
+        "marketing-image-board", "marketing-image-producer", "marketing-veo-video",
+        "marketing-omni-video"},
+    "marketing-performance": {"marketing-brief"},
+}
 
 
 def read_json(path):
@@ -17,18 +25,21 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def package_files():
+def package_files(plugin=None):
     """An explicit surface allowlist; never archive the repository root."""
-    files = [PLUGIN / kind / "plugin.json"
+    plugin = PLUGIN if plugin is None else plugin
+    files = [plugin / kind / "plugin.json"
              for kind in (".codex-plugin", ".claude-plugin")]
-    require(not PLUGIN.is_symlink() and not (PLUGIN / "skills").is_symlink(),
+    require(not plugin.is_symlink() and not (plugin / "skills").is_symlink(),
             "Plugin and skill roots must not be symlinks")
-    for path in sorted((PLUGIN / "skills").rglob("*")):
+    for kind in (".codex-plugin", ".claude-plugin"):
+        require(not (plugin / kind).is_symlink(), f"Symlinked package ancestor: {plugin / kind}")
+    for path in sorted((plugin / "skills").rglob("*")):
         require(not path.is_symlink(), f"Symlink is not a distributable asset: {path}")
         if "__pycache__" in path.parts:
             continue
         if path.is_file():
-            relative = path.relative_to(PLUGIN / "skills")
+            relative = path.relative_to(plugin / "skills")
             allowed = (len(relative.parts) == 2 and relative.name == "SKILL.md") or (
                 len(relative.parts) >= 3 and relative.parts[1] in {
                     "agents", "references", "scripts", "assets"
@@ -40,27 +51,28 @@ def package_files():
                                   and relative.parts[0] == "marketing-image-producer")
             require(allowed, f"Unexpected skill asset: {path}")
             files.append(path)
-    notices = PLUGIN / "third-party"
+    notices = plugin / "third-party"
     require(not notices.is_symlink(), "Third-party root must not be a symlink")
-    expected_notices = {"bang-motion.LICENSE", "hyperframe-pro.LICENSE"}
-    require({p.name for p in notices.iterdir()} == expected_notices,
+    expected_notices = ({"bang-motion.LICENSE", "hyperframe-pro.LICENSE"}
+                        if plugin.name == "marketing-creative" else set())
+    require(({p.name for p in notices.iterdir()} if notices.exists() else set()) == expected_notices,
             "Unexpected or missing third-party notices")
     files.extend(notices / name for name in sorted(expected_notices))
     for path in files:
         require(path.is_file() and not path.is_symlink(), f"Missing/unsafe package file: {path}")
-        require(path.resolve().is_relative_to(PLUGIN.resolve()), f"Package file escapes plugin: {path}")
-        require(not any(parent.is_symlink() for parent in path.parents if parent.is_relative_to(PLUGIN)),
+        require(path.resolve().is_relative_to(plugin.resolve()), f"Package file escapes plugin: {path}")
+        require(not any(parent.is_symlink() for parent in path.parents if parent.is_relative_to(plugin)),
                 f"Symlinked package ancestor: {path}")
     return files
 
 
-def validate():
-    codex = read_json(PLUGIN / ".codex-plugin/plugin.json")
-    claude = read_json(PLUGIN / ".claude-plugin/plugin.json")
+def validate_plugin(plugin):
+    codex = read_json(plugin / ".codex-plugin/plugin.json")
+    claude = read_json(plugin / ".claude-plugin/plugin.json")
     for key in ("name", "version", "description", "author", "repository"):
         require(codex.get(key) == claude.get(key) and bool(codex.get(key)),
                 f"Client manifests disagree or omit {key}")
-    require(codex["name"] == "marketing-creative", "Unexpected plugin identity")
+    require(codex["name"] == plugin.name, "Unexpected plugin identity")
     require(re.fullmatch(r"\d+\.\d+\.\d+", codex["version"]), "Invalid release version")
     require(codex.get("skills") == "./skills/", "Codex skill path changed")
     require(codex.get("interface", {}).get("displayName"), "Missing Codex display name")
@@ -71,21 +83,19 @@ def validate():
                     (".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json")]
     for market in marketplaces:
         require(market["name"] == "marketing-creative", "Unexpected marketplace identity")
-        require(len(market["plugins"]) == 1, "Update validator when adding plugins")
-        entry = market["plugins"][0]
+        require({e["name"] for e in market["plugins"]} == set(PLUGINS)
+                and len(market["plugins"]) == len(PLUGINS), "Marketplace plugin inventory mismatch")
+        entry = next(e for e in market["plugins"] if e["name"] == plugin.name)
         require(entry["name"] == codex["name"], "Marketplace/plugin identity mismatch")
         source = entry["source"]
         if isinstance(source, dict):
             require(source.get("source") == "local", "Expected local Codex source")
             source = source["path"]
-        require(source == "./plugins/marketing-creative", "Unexpected plugin source path")
-        require((ROOT / source).resolve() == PLUGIN, "Source must resolve from repository root")
+        require(source == f"./plugins/{plugin.name}", "Unexpected plugin source path")
+        require((ROOT / source).resolve() == plugin, "Source must resolve from repository root")
 
-    skills = sorted((PLUGIN / "skills").glob("*/SKILL.md"))
-    expected_skills = {"marketing-brief", "creative-ideation", "ad-video-director",
-                       "motion-video-producer", "motion-art-director", "motion-storyboard",
-                       "motion-voice", "motion-composer", "motion-video-qa",
-                       "marketing-image-board", "marketing-image-producer", "marketing-veo-video", "marketing-omni-video"}
+    skills = sorted((plugin / "skills").glob("*/SKILL.md"))
+    expected_skills = PLUGINS[plugin.name]
     require({s.parent.name for s in skills} == expected_skills, "Missing/unexpected suite skills")
     for skill in skills:
         text = skill.read_text(encoding="utf-8")
@@ -101,9 +111,9 @@ def validate():
             require(re.search(r"^\s+allow_implicit_invocation: false$",ui,re.M),
                     f"Paid video generation must remain opt-in: {skill}")
 
-    files = package_files()
+    files = package_files(plugin)
     for path in files:
-        relative = path.relative_to(PLUGIN)
+        relative = path.relative_to(plugin)
         require(not any(p in {"samples", "local-docs", "__pycache__"} for p in relative.parts),
                 f"Private/generated material in package: {path}")
         if path.suffix == ".md":
@@ -113,13 +123,26 @@ def validate():
                 if "://" in target or target.startswith("#"):
                     continue
                 resolved = (path.parent / target.split("#", 1)[0]).resolve()
-                require(resolved.is_relative_to(PLUGIN) and resolved.exists(),
+                require(resolved.is_relative_to(plugin) and resolved.exists(),
                         f"Broken or escaping resource link: {path}: {target}")
         if path.suffix == ".json":
             read_json(path)
     return files
 
 
+def validate(plugin_name=None):
+    """Validate both plugins, or select one archive's independently usable tree."""
+    names = [plugin_name] if plugin_name else PLUGINS
+    files = []
+    for name in names:
+        require(name in PLUGINS, f"Unknown plugin: {name}")
+        files.extend(validate_plugin(ROOT / "plugins" / name))
+    versions = {read_json(ROOT / "plugins" / name / ".codex-plugin/plugin.json")["version"]
+                for name in PLUGINS}
+    require(len(versions) == 1, "Plugins must share the repository release version")
+    return files
+
+
 if __name__ == "__main__":
     files = validate()
-    print(f"Validated shared skill resources, dual manifests and marketplaces: {len(files)} package files")
+    print(f"Validated both plugins, resources and marketplaces: {len(files)} package files")

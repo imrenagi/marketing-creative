@@ -4,13 +4,18 @@
     "name": "Imre Nagi"
   },
   "metadata": {
-    "description": "Marketing strategy, creative ideation, image assets and video production skills"
+    "description": "Campaign planning and UTM operations alongside creative image and video production"
   },
   "plugins": [
     {
       "name": "marketing-creative",
       "source": "./plugins/marketing-creative",
-      "description": "Thirteen skills from campaign strategy to images, opt-in Veo/Omni clips and multi-ratio video production"
+      "description": "Twelve creative skills for concepts, images, opt-in Veo/Omni clips and multi-ratio video production"
+    },
+    {
+      "name": "marketing-performance",
+      "source": "./plugins/marketing-performance",
+      "description": "Marketing briefs and campaign operations with documented UTM links"
     }
   ]
 }
