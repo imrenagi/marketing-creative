@@ -1,3 +1,9 @@
+## [0.4.0](https://github.com/imrenagicom/marketing-creative/compare/v0.3.0...v0.4.0) (2026-10-16)
+
+### Features
+
+* **performance:** add personal and sales copy styles ([85ccd28](https://github.com/imrenagicom/marketing-creative/commit/85ccd286d3b37dbc007805aaed4f6680176a6c9a))
+
 ## [0.3.0](https://github.com/imrenagicom/marketing-creative/compare/v0.2.1...v0.3.0) (2026-10-16)
 
 ### Features
