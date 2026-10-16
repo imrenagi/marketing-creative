@@ -1,3 +1,9 @@
+## [0.2.1](https://github.com/imrenagicom/marketing-creative/compare/v0.2.0...v0.2.1) (2026-10-16)
+
+### Refactoring
+
+* **performance:** rename campaign-utm to campaign-manager ([56fc508](https://github.com/imrenagicom/marketing-creative/commit/56fc50898487bc0791fcc2cbe4a50ebc52c312f4))
+
 ## [0.2.0](https://github.com/imrenagicom/marketing-creative/compare/v0.1.1...v0.2.0) (2026-10-16)
 
 ### Features
