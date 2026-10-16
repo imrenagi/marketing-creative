@@ -1,3 +1,15 @@
+## [0.5.0](https://github.com/imrenagicom/marketing-creative/compare/v0.4.0...v0.5.0) (2026-10-16)
+
+### Features
+
+* **storyboard:** strengthen beat planning and review gates ([4f17c25](https://github.com/imrenagicom/marketing-creative/commit/4f17c25688bf38b64905684bbef1a14a23b0bed9))
+* **video:** add the marketing video workflow entry point ([3b83ba5](https://github.com/imrenagicom/marketing-creative/commit/3b83ba5674dad7bee9033ec3319d55f2e6fa7c4a))
+* **voice:** normalize loudness and support pause classes ([858ff4f](https://github.com/imrenagicom/marketing-creative/commit/858ff4fc30c65e7da66f271a821666fb5b45426d))
+
+### Maintenance
+
+* merge automated 0.4.0 release metadata ([77fc5c3](https://github.com/imrenagicom/marketing-creative/commit/77fc5c356216322adea3d64bc4068d7597a9fed8))
+
 ## [0.4.0](https://github.com/imrenagicom/marketing-creative/compare/v0.3.0...v0.4.0) (2026-10-16)
 
 ### Features
